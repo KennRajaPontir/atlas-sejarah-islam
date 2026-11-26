@@ -1,0 +1,2557 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jejak Peradaban & Peninggalan Sejarah Islam Dunia</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Amiri untuk sentuhan kaligrafi/klasik -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet.js CSS untuk Peta Interaktif -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <!-- Font Awesome 6 untuk Ikon Kaya & Responsif -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+
+  <!-- Konfigurasi Warna & Font Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Amiri"', 'serif'],
+          },
+          colors: {
+            emeraldDeep: '#064e3b',
+            emeraldRich: '#047857',
+            goldAccent: '#d97706',
+            goldLight: '#f59e0b',
+            creamWarm: '#fdfbf7',
+            creamSoft: '#f6f1e7',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Pola Geometri Islami Halus untuk Latar Hero */
+    .islamic-pattern {
+      background-color: #064e3b;
+      background-image: radial-gradient(rgba(245, 158, 11, 0.14) 1.5px, transparent 1.5px),
+                        radial-gradient(rgba(16, 185, 129, 0.16) 1.5px, #064e3b 1.5px);
+      background-size: 36px 36px;
+      background-position: 0 0, 18px 18px;
+    }
+
+    /* Kustomisasi Scrollbar Elegan */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(6, 78, 59, 0.06);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #047857;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
+    }
+
+    /* Penyesuaian Leaflet Popup agar menyatu dengan tema */
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px !important;
+      padding: 4px !important;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25) !important;
+      border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px !important;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      min-width: 240px;
+      max-width: 300px;
+    }
+    .custom-pin {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    /* Animasi Halus */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in {
+      animation: fadeInUp 0.35s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-creamWarm text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 antialiased selection:bg-amber-500 selection:text-white">
+
+  <!-- ==================== TOAST NOTIFICATION (Pengganti alert) ==================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== 1. NAVIGASI UTAMA (STICKY NAVBAR) ==================== -->
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-amber-500/20 dark:border-emerald-800/40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <!-- Logo Brand -->
+        <a href="#beranda" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-emerald-800 to-emerald-600 flex items-center justify-center text-amber-300 shadow-md group-hover:scale-105 transition-transform border border-amber-400/40">
+            <!-- Ikon Bintang Geometri Islam SVG -->
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1l2.8 5.7L21 7.6l-4.5 4.4 1.1 6.2L12 15.3l-5.6 2.9 1.1-6.2L3 7.6l6.2-.9L12 1z" opacity="0.9"/>
+              <circle cx="12" cy="12" r="3" fill="#064e3b"/>
+            </svg>
+          </div>
+          <div>
+            <span class="block font-extrabold text-base md:text-lg tracking-tight text-emerald-950 dark:text-emerald-300 leading-none">
+              Jejak Peradaban
+            </span>
+            <span class="text-[11px] md:text-xs font-semibold text-amber-600 dark:text-amber-400 tracking-wider uppercase">
+              Sejarah & Peninggalan Islam
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-semibold">
+          <a href="#beranda" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Beranda & Linimasa</a>
+          <a href="#peta" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Peta Peninggalan</a>
+          <a href="#eksplorasi" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Eksplorasi Benua</a>
+          <a href="#kuis" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Kuis Sejarah</a>
+          <a href="#progres" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Progres & Kelompok</a>
+          <a href="#referensi" class="px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 hover:text-emerald-800 dark:hover:text-amber-300 transition">Referensi</a>
+        </nav>
+
+        <!-- Action Buttons: Theme Toggle & Mobile Menu -->
+        <div class="flex items-center gap-2">
+          <button id="theme-toggle" aria-label="Ubah Tema Gelap atau Terang" class="p-2.5 rounded-xl bg-creamSoft dark:bg-slate-800 text-emerald-900 dark:text-amber-300 hover:ring-2 hover:ring-amber-500/50 transition">
+            <i id="theme-icon" class="fa-solid fa-moon text-base"></i>
+          </button>
+
+          <button id="mobile-menu-btn" aria-label="Buka Menu Navigasi" class="lg:hidden p-2.5 rounded-xl bg-emerald-800 text-white hover:bg-emerald-700 transition">
+            <i class="fa-solid fa-bars text-base"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white dark:bg-slate-900 border-t border-amber-500/20 px-4 pt-3 pb-5 space-y-1.5 shadow-xl">
+      <a href="#beranda" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">1. Beranda & Linimasa</a>
+      <a href="#peta" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">2. Peta Peninggalan Dunia</a>
+      <a href="#eksplorasi" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">3. Eksplorasi Benua & Negara</a>
+      <a href="#kuis" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">4. Kuis & Perancangan</a>
+      <a href="#progres" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">5. Progres & Dokumentasi Kelompok</a>
+      <a href="#referensi" class="mobile-nav-link block px-4 py-2.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/40">6. Sumber Referensi</a>
+    </div>
+  </header>
+
+  <!-- ==================== 2. HERO SECTION & LINIMASA DINASTI ==================== -->
+  <section id="beranda" class="relative overflow-hidden">
+    <!-- Hero Banner -->
+    <div class="islamic-pattern text-white py-14 md:py-22 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-500">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-semibold">
+            <i class="fa-solid fa-compass"></i>
+            <span>Ensiklopedia Digital Sejarah & Geografi Peradaban Islam</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">
+            Menelusuri <span class="text-amber-400">Jejak Sejarah Islam</span> & Peninggalan Lintas Benua
+          </h1>
+
+          <p class="text-emerald-100/90 text-base sm:text-lg leading-relaxed max-w-2xl">
+            Pelajari perjalanan dakwah Islam dari Jazirah Arab hingga ke penjuru Asia, Afrika, Eropa, dan Amerika. Temukan kisah di balik artefak penguasa terdahulu, titik koordinat lokasi penyimpanan aslinya di peta dunia, hingga pusat peradaban Islam modern saat ini.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#peta" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold shadow-lg shadow-amber-500/25 transition transform hover:-translate-y-0.5">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <span>Jelajahi Peta Peninggalan</span>
+            </a>
+            <a href="#eksplorasi" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-800/80 hover:bg-emerald-700 text-white font-semibold border border-emerald-500/40 transition">
+              <i class="fa-solid fa-globe"></i>
+              <span>Eksplorasi 13 Negara</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Kartu Statistik & Ringkasan Visual -->
+        <div class="lg:col-span-5">
+          <div class="bg-emerald-950/70 backdrop-blur-md border border-amber-400/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div class="flex items-center justify-between border-b border-emerald-700/60 pb-4">
+              <div>
+                <p class="text-xs uppercase tracking-widest text-amber-400 font-bold">Cakupan Riset Portal</p>
+                <h2 class="text-xl font-bold text-white mt-0.5">Ringkasan Arsip Sejarah</h2>
+              </div>
+              <span class="font-serif text-2xl text-amber-300">التاريخ الإسلامي</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-emerald-900/60 border border-emerald-700/50">
+                <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">4 Benua</div>
+                <div class="text-xs sm:text-sm text-emerald-100 mt-1">Asia, Afrika, Eropa & Amerika</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-emerald-900/60 border border-emerald-700/50">
+                <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">13 Negara</div>
+                <div class="text-xs sm:text-sm text-emerald-100 mt-1">Sejarah Masuk & Kondisi Kini</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-emerald-900/60 border border-emerald-700/50">
+                <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">22 Titik</div>
+                <div class="text-xs sm:text-sm text-emerald-100 mt-1">Pin Peninggalan & Pusat Islam</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-emerald-900/60 border border-emerald-700/50">
+                <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">7 Dinasti</div>
+                <div class="text-xs sm:text-sm text-emerald-100 mt-1">Khulafaur Rasyidin s.d. Nusantara</div>
+              </div>
+            </div>
+
+            <p class="text-xs text-emerald-200/80 leading-relaxed">
+              <i class="fa-solid fa-circle-info text-amber-400 mr-1"></i>
+              Setiap benda atau situs peninggalan dilengkapi cerita di balik pembuatannya serta koordinat geografis untuk melihat lokasi keberadaannya hari ini.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Linimasa Interaktif Dinasti Penguasa Islam -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Kronologi Kekuasaan & Peradaban</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 dark:text-white mt-1">
+            Linimasa Dinasti & Penguasa Islam Terdahulu
+          </h2>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md">
+          Klik salah satu era kekhalifahan atau kesultanan di bawah untuk melihat wilayah pengaruh dan warisan peninggalannya.
+        </p>
+      </div>
+
+      <!-- Tombol Pilih Dinasti -->
+      <div id="dynasty-tabs" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-6">
+        <!-- Diisi otomatis via JavaScript -->
+      </div>
+
+      <!-- Panel Detail Dinasti Terpilih -->
+      <div id="dynasty-detail-card" class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-amber-500/25 dark:border-emerald-800/50 shadow-lg transition-all">
+        <!-- Diisi otomatis via JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. PETA INTERAKTIF LOKASI PENINGGALAN (LEAFLET) ==================== -->
+  <section id="peta" class="py-14 bg-creamSoft/70 dark:bg-slate-900/60 border-y border-amber-500/20 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Geolokasi Artefak & Pusat Peradaban</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 dark:text-white mt-1">
+            Peta Interaktif Lokasi Peninggalan & Pusat Islam Dunia
+          </h2>
+          <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
+            Klik pin pada peta atau pilih daftar lokasi di sebelah kanan untuk melihat tempat penyimpanan benda bersejarah, kisah di baliknya, dan titik koordinat aslinya.
+          </p>
+        </div>
+
+        <!-- Legenda Pin Peta -->
+        <div class="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-semibold shadow-sm">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block ring-2 ring-amber-200"></span>
+            Peninggalan Penguasa Terdahulu
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded-full bg-emerald-600 inline-block ring-2 ring-emerald-200"></span>
+            Pusat Islam Modern
+          </span>
+        </div>
+      </div>
+
+      <!-- Filter Bar Peta -->
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-amber-500/20 dark:border-slate-800 shadow-sm mb-6 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <!-- Filter Benua -->
+        <div class="flex flex-wrap items-center gap-1.5" id="map-continent-filters">
+          <button data-continent="Semua" class="map-cont-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-800 text-white transition">Semua Benua</button>
+          <button data-continent="Asia" class="map-cont-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-creamSoft dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-100 transition">Asia</button>
+          <button data-continent="Afrika" class="map-cont-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-creamSoft dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-100 transition">Afrika</button>
+          <button data-continent="Eropa" class="map-cont-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-creamSoft dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-100 transition">Eropa</button>
+          <button data-continent="Amerika" class="map-cont-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-creamSoft dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-100 transition">Amerika</button>
+        </div>
+
+        <!-- Filter Kategori & Pencarian -->
+        <div class="flex flex-col sm:flex-row gap-2.5">
+          <select id="map-category-filter" aria-label="Filter Kategori Lokasi" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-creamSoft dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option value="Semua">Semua Kategori Lokasi</option>
+            <option value="Peninggalan">Peninggalan Penguasa Terdahulu</option>
+            <option value="Pusat Islam">Pusat Islam Modern</option>
+          </select>
+
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="map-search-input" placeholder="Cari peninggalan / negara..." class="w-full sm:w-52 pl-8 pr-3 py-2 rounded-xl text-xs bg-creamSoft dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+
+          <button id="map-reset-view" title="Reset Tampilan Peta Dunia" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 transition">
+            <i class="fa-solid fa-expand mr-1"></i> Reset Zoom
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid Peta & Daftar Kartu Lokasi -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Kontainer Peta Leaflet -->
+        <div class="lg:col-span-8 bg-white dark:bg-slate-900 p-2.5 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-lg">
+          <div id="heritage-map" class="w-full h-[420px] sm:h-[520px] rounded-2xl z-10"></div>
+        </div>
+
+        <!-- Daftar Kartu Lokasi Interaktif -->
+        <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-lg p-4 flex flex-col h-[540px]">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+            <h3 class="font-bold text-sm text-emerald-950 dark:text-emerald-300">
+              <i class="fa-solid fa-location-dot text-amber-500 mr-1.5"></i>
+              Daftar Titik Lokasi (<span id="map-count">0</span>)
+            </h3>
+            <span class="text-[11px] text-slate-500">Klik untuk terbang ke lokasi</span>
+          </div>
+
+          <div id="map-location-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+            <!-- Diisi otomatis via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. EKSPLORASI PER BENUA & NEGARA ==================== -->
+  <section id="eksplorasi" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <span class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Studi Komparatif Lintas Kawasan</span>
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-emerald-950 dark:text-white mt-1">
+        Eksplorasi Sejarah & Peninggalan Islam per Benua
+      </h2>
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-2">
+        Pilih benua dan negara untuk mempelajari jalur masuknya Islam, artefak peninggalan penguasa terdahulu beserta kisah di baliknya, pusat Islam, serta perkembangannya saat ini.
+      </p>
+    </div>
+
+    <!-- Step 1: Pilih Benua -->
+    <div class="flex flex-wrap justify-center gap-2.5 sm:gap-4 mb-8" id="continent-selector">
+      <!-- Diisi otomatis via JavaScript -->
+    </div>
+
+    <!-- Step 2: Pilih Negara di Benua Tersebut -->
+    <div class="bg-creamSoft/80 dark:bg-slate-900/80 p-4 sm:p-5 rounded-3xl border border-amber-500/20 dark:border-slate-800 mb-8">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+          <i class="fa-solid fa-flag mr-1.5 text-amber-500"></i>
+          Pilih Negara di Benua <span id="selected-continent-label">Asia</span>:
+        </span>
+        <span class="text-xs text-slate-500" id="country-count-label">5 Negara</span>
+      </div>
+      <div id="country-selector" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+        <!-- Diisi otomatis via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Step 3: Kartu Detail Lengkap Negara Terpilih -->
+    <div id="country-detail-container" class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/30 dark:border-emerald-800/60 shadow-xl overflow-hidden animate-fade-in">
+      <!-- Diisi otomatis via JavaScript -->
+    </div>
+  </section>
+
+  <!-- ==================== 5. PERANCANGAN & SIMULASI KUIS INTERAKTIF ==================== -->
+  <section id="kuis" class="py-16 bg-creamSoft/70 dark:bg-slate-900/60 border-y border-amber-500/20 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Evaluasi & Instrumen Penilaian</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 dark:text-white mt-1">
+          Kuis Sejarah Islam & Dokumen Perancangan Kuis
+        </h2>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mt-1.5">
+          Uji pemahamanmu melalui simulasi kuis 10 soal pilihan ganda lengkap dengan pembahasan, atau tinjau kisi-kisi perancangan soal untuk laporan tugas.
+        </p>
+      </div>
+
+      <!-- Tab Switcher Kuis vs Perancangan -->
+      <div class="flex justify-center gap-3 mb-8">
+        <button id="tab-quiz-sim" class="quiz-main-tab active px-5 py-3 rounded-2xl text-sm font-bold bg-emerald-800 text-white shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-play-circle text-amber-400"></i>
+          <span>Simulasi Kuis Interaktif</span>
+        </button>
+        <button id="tab-quiz-design" class="quiz-main-tab px-5 py-3 rounded-2xl text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 transition flex items-center gap-2">
+          <i class="fa-solid fa-table-list text-amber-500"></i>
+          <span>Dokumen Perancangan Kuis</span>
+        </button>
+      </div>
+
+      <!-- PANEL 1: SIMULASI KUIS INTERAKTIF -->
+      <div id="panel-quiz-sim" class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-xl p-6 sm:p-8">
+        <!-- Layar Awal Kuis -->
+        <div id="quiz-start-screen" class="text-center py-6 space-y-6">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-3xl">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div class="space-y-2 max-w-lg mx-auto">
+            <h3 class="text-xl sm:text-2xl font-extrabold text-emerald-950 dark:text-white">Siap Menguji Wawasan Sejarah Islam Dunia?</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-300">
+              Terdiri dari <strong>10 soal pilihan ganda</strong> mencakup jalur masuknya Islam, peninggalan penguasa terdahulu, dan letak geografis situs bersejarah.
+            </p>
+          </div>
+
+          <div class="max-w-md mx-auto space-y-3">
+            <input type="text" id="quiz-participant-name" placeholder="Masukkan Nama Lengkap Anda (untuk Sertifikat)" class="w-full px-4 py-3 rounded-xl text-sm bg-creamSoft dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer">
+              <input type="checkbox" id="quiz-enable-timer" checked class="rounded text-emerald-700 focus:ring-amber-500" />
+              <span>Aktifkan Timer Tantangan (10 Menit)</span>
+            </label>
+          </div>
+
+          <button id="btn-start-quiz" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-800 to-emerald-600 hover:from-emerald-700 hover:to-emerald-500 text-white font-bold shadow-lg transition transform hover:-translate-y-0.5">
+            <i class="fa-solid fa-rocket mr-2 text-amber-300"></i>Mulai Kuis Sekarang
+          </button>
+        </div>
+
+        <!-- Layar Pertanyaan Kuis -->
+        <div id="quiz-active-screen" class="hidden space-y-6">
+          <!-- Header Status Kuis -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+              <span class="px-3.5 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-900 dark:text-emerald-300 text-xs font-extrabold">
+                Soal <span id="quiz-q-num">1</span> / 10
+              </span>
+              <span id="quiz-topic-badge" class="px-3 py-1 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-semibold">
+                Topik
+              </span>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-bold">
+              <span class="text-emerald-700 dark:text-emerald-400">
+                <i class="fa-solid fa-star text-amber-500 mr-1"></i>Skor: <span id="quiz-live-score">0</span>
+              </span>
+              <span id="quiz-timer-badge" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                <i class="fa-regular fa-clock mr-1 text-amber-500"></i><span id="quiz-timer-text">10:00</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Bar Soal -->
+          <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-progress-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 10%"></div>
+          </div>
+
+          <!-- Teks Soal -->
+          <div>
+            <h3 id="quiz-question-text" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed">
+              Pertanyaan akan muncul di sini...
+            </h3>
+          </div>
+
+          <!-- Pilihan Jawaban -->
+          <div id="quiz-options-list" class="space-y-3">
+            <!-- Diisi otomatis via JavaScript -->
+          </div>
+
+          <!-- Kotak Pembahasan Jawaban -->
+          <div id="quiz-explanation-box" class="hidden p-4 sm:p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/60 text-sm space-y-1.5 animate-fade-in">
+            <div class="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-2">
+              <i class="fa-solid fa-book-open text-amber-500"></i>
+              <span>Pembahasan Sejarah:</span>
+            </div>
+            <p id="quiz-explanation-text" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+          </div>
+
+          <!-- Tombol Navigasi Soal -->
+          <div class="flex justify-end pt-2">
+            <button id="btn-next-question" class="hidden px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold shadow transition">
+              Soal Berikutnya <i class="fa-solid fa-arrow-right ml-1.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Layar Hasil Akhir & Sertifikat -->
+        <div id="quiz-result-screen" class="hidden text-center py-4 space-y-6 animate-fade-in">
+          <!-- Kartu Sertifikat Digital -->
+          <div class="relative max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-950 text-white border-4 border-amber-400/70 shadow-2xl">
+            <div class="text-amber-400 text-xs uppercase tracking-[0.25em] font-bold">Sertifikat Penyelesaian Evaluasi</div>
+            <h3 class="font-serif text-2xl sm:text-3xl font-bold text-amber-300 mt-1">Jejak Peradaban Sejarah Islam</h3>
+            <p class="text-xs text-emerald-200 mt-2">Diberikan dengan bangga kepada:</p>
+            <div id="cert-participant-name" class="text-2xl sm:text-3xl font-extrabold text-white my-2 underline decoration-amber-400 decoration-2 underline-offset-4">
+              Peserta Edukasi
+            </div>
+            <p class="text-xs sm:text-sm text-emerald-100 max-w-md mx-auto">
+              Telah menyelesaikan evaluasi interaktif mengenai Sejarah Masuknya Islam, Peninggalan Dinasti Terdahulu, dan Geografi Peradaban Islam Dunia.
+            </p>
+
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mt-6 pt-5 border-t border-emerald-700/70">
+              <div>
+                <div class="text-xs text-emerald-300">Skor Akhir</div>
+                <div id="cert-score" class="text-2xl font-extrabold text-amber-400">100</div>
+              </div>
+              <div>
+                <div class="text-xs text-emerald-300">Jawaban Benar</div>
+                <div id="cert-correct" class="text-2xl font-extrabold text-emerald-300">10/10</div>
+              </div>
+              <div>
+                <div class="text-xs text-emerald-300">Predikat</div>
+                <div id="cert-grade" class="text-sm sm:text-base font-extrabold text-amber-300 mt-1">Mumtaz</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap justify-center gap-3">
+            <button id="btn-retry-quiz" class="px-6 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-white font-bold transition">
+              <i class="fa-solid fa-rotate-right mr-1.5"></i>Ulangi Kuis
+            </button>
+            <button id="btn-copy-result" class="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold transition">
+              <i class="fa-solid fa-copy mr-1.5"></i>Salin Hasil untuk Laporan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL 2: DOKUMEN PERANCANGAN KUIS (KISI-KISI & RUBRIK) -->
+      <div id="panel-quiz-design" class="hidden bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6 animate-fade-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-emerald-950 dark:text-white">Kisi-Kisi & Blueprint Perancangan Instrumen Kuis</h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Dokumen acuan akademik untuk penyusunan evaluasi media pembelajaran berbasis web.</p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-bold self-start">
+            Taksonomi Bloom (C1 – C4)
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-emerald-900 text-white">
+                <th class="p-3 rounded-tl-xl">No</th>
+                <th class="p-3">Kompetensi / Materi Pokok</th>
+                <th class="p-3">Indikator Pencapaian</th>
+                <th class="p-3">Level Kognitif</th>
+                <th class="p-3">No. Soal</th>
+                <th class="p-3 rounded-tr-xl">Bobot</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+              <tr class="hover:bg-creamSoft/60 dark:hover:bg-slate-800/50">
+                <td class="p-3 font-bold">1</td>
+                <td class="p-3 font-semibold">Sejarah Masuknya Islam di Nusantara & Asia</td>
+                <td class="p-3">Mengidentifikasi jalur perdagangan & kesultanan Islam pertama di Asia Tenggara serta Asia Tengah.</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-semibold">C2 (Memahami)</span></td>
+                <td class="p-3 font-mono">1, 2, 8</td>
+                <td class="p-3 font-bold">30%</td>
+              </tr>
+              <tr class="hover:bg-creamSoft/60 dark:hover:bg-slate-800/50">
+                <td class="p-3 font-bold">2</td>
+                <td class="p-3 font-semibold">Peninggalan Penguasa & Dinasti Terdahulu</td>
+                <td class="p-3">Menghubungkan artefak/arsitektur bersejarah (Mushaf Utsmani, Alhambra, Taj Mahal, Hagia Sophia) dengan dinasti penguasanya.</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 font-semibold">C3 (Menerapkan)</span></td>
+                <td class="p-3 font-mono">3, 4, 5, 7</td>
+                <td class="p-3 font-bold">40%</td>
+              </tr>
+              <tr class="hover:bg-creamSoft/60 dark:hover:bg-slate-800/50">
+                <td class="p-3 font-bold">3</td>
+                <td class="p-3 font-semibold">Geolokasi & Pusat Peradaban Islam Dunia</td>
+                <td class="p-3">Menganalisis lokasi penyimpanan artefak saat ini serta peran pusat keilmuan Islam di Afrika, Eropa, dan Amerika.</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 font-semibold">C4 (Menganalisis)</span></td>
+                <td class="p-3 font-mono">6, 9, 10</td>
+                <td class="p-3 font-bold">30%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="p-4 rounded-2xl bg-creamSoft dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-300 mb-1"><i class="fa-solid fa-check-double text-amber-500 mr-1.5"></i>Mekanisme Skor</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Setiap jawaban benar bernilai <strong>10 poin</strong> (Total maksimal 100 poin). Sistem memberikan umpan balik langsung (*immediate feedback*) berupa penjelasan historis pada setiap butir soal.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-creamSoft dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-300 mb-1"><i class="fa-solid fa-medal text-amber-500 mr-1.5"></i>Kriteria Ketuntasan</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Skor ≥ 80: <strong>Mumtaz (Sangat Baik)</strong>; Skor 60–79: <strong>Jayyid Jiddan (Baik)</strong>; Skor &lt; 60: <strong>Disarankan mengeksplorasi ulang peta & materi benua</strong>.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-creamSoft dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-300 mb-1"><i class="fa-solid fa-stopwatch text-amber-500 mr-1.5"></i>Manajemen Waktu</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Alokasi waktu 10 menit (60 detik/soal) dengan opsi mode santai tanpa timer bagi siswa yang ingin membaca pembahasan lebih mendalam.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 6. PERKEMBANGAN PROJECT & DOKUMENTASI KELOMPOK ==================== -->
+  <section id="progres" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">Manajemen Tugas & Kolaborasi Tim</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 dark:text-white mt-1">
+          Perkembangan Project & Dokumentasi Kelompok
+        </h2>
+      </div>
+      <button id="btn-export-group-report" class="self-start md:self-auto px-4 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-bold shadow transition flex items-center gap-2">
+        <i class="fa-solid fa-clipboard-check text-amber-400"></i>
+        <span>Salin Ringkasan Laporan Kelompok</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Kolom Kiri: Tracker Perkembangan Project -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-lg p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-extrabold text-lg text-emerald-950 dark:text-white">
+              <i class="fa-solid fa-bars-progress text-amber-500 mr-2"></i>Progres Penyelesaian Web
+            </h3>
+            <span id="project-progress-percent" class="text-xl font-extrabold text-emerald-700 dark:text-amber-400">100%</span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full h-3.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-5">
+            <div id="project-progress-bar" class="h-full bg-gradient-to-r from-emerald-700 to-amber-500 transition-all duration-500" style="width: 100%"></div>
+          </div>
+
+          <!-- Checklist Tahapan Pengerjaan -->
+          <div id="project-milestones-list" class="space-y-3">
+            <!-- Diisi otomatis via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Changelog Pembaruan -->
+        <div class="bg-creamSoft/80 dark:bg-slate-900/90 rounded-3xl border border-amber-500/20 dark:border-slate-800 p-6">
+          <h4 class="font-bold text-sm text-emerald-950 dark:text-emerald-300 uppercase tracking-wider mb-3">
+            <i class="fa-solid fa-code-branch text-amber-500 mr-1.5"></i>Log Pembaruan Sistem (Changelog)
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
+            <li class="flex gap-2.5">
+              <span class="px-2 py-0.5 rounded bg-emerald-800 text-white font-mono text-[10px] h-fit">v1.3</span>
+              <span>Integrasi peta interaktif Leaflet.js dengan fitur <em>flyTo</em> langsung dari kartu detail negara & filter multi-benua.</span>
+            </li>
+            <li class="flex gap-2.5">
+              <span class="px-2 py-0.5 rounded bg-amber-600 text-white font-mono text-[10px] h-fit">v1.2</span>
+              <span>Penambahan 13 negara lengkap (sejarah masuk, artefak dinasti sebelumnya, pusat Islam, & kondisi kini) + kuis 10 soal.</span>
+            </li>
+            <li class="flex gap-2.5">
+              <span class="px-2 py-0.5 rounded bg-slate-600 text-white font-mono text-[10px] h-fit">v1.0</span>
+              <span>Perancangan struktur UI/UX responsif bernuansa emerald-gold & linimasa 7 dinasti Islam.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan: Dokumentasi Anggota Kelompok & Notulensi Rapat -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Tabel Anggota Kelompok (Bisa Diedit Langsung) -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-lg p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h3 class="font-extrabold text-lg text-emerald-950 dark:text-white">
+                <i class="fa-solid fa-users text-amber-500 mr-2"></i>Struktur & Pembagian Tugas Kelompok
+              </h3>
+              <p class="text-xs text-slate-500">Klik tombol "Edit Anggota" untuk menyesuaikan nama & NIM/NIS anggota kelompokmu.</p>
+            </div>
+            <button id="btn-toggle-edit-members" class="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-xs font-bold transition">
+              <i class="fa-solid fa-pen-to-square mr-1"></i>Edit Anggota
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-creamSoft dark:bg-slate-800 text-emerald-950 dark:text-emerald-300 border-b border-slate-200 dark:border-slate-700">
+                  <th class="p-3 rounded-tl-xl">No</th>
+                  <th class="p-3">Nama Anggota</th>
+                  <th class="p-3">NIM / NIS</th>
+                  <th class="p-3 rounded-tr-xl">Peran & Tanggung Jawab (Jobdesk)</th>
+                </tr>
+              </thead>
+              <tbody id="group-members-tbody" class="divide-y divide-slate-200 dark:divide-slate-800">
+                <!-- Diisi otomatis via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Log Notulensi Rapat & Dokumentasi Kegiatan -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-amber-500/25 dark:border-slate-800 shadow-lg p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h3 class="font-extrabold text-lg text-emerald-950 dark:text-white">
+                <i class="fa-solid fa-folder-open text-amber-500 mr-2"></i>Log Dokumentasi & Notulensi Kegiatan
+              </h3>
+              <p class="text-xs text-slate-500">Catatan koordinasi riset sejarah, pemetaan lokasi, dan uji coba website.</p>
+            </div>
+            <button id="btn-show-log-form" class="px-3.5 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-bold transition">
+              <i class="fa-solid fa-plus mr-1"></i>Tambah Log Kegiatan
+            </button>
+          </div>
+
+          <!-- Form Tambah Log Kegiatan (Tersembunyi secara default) -->
+          <form id="add-log-form" class="hidden mb-4 p-4 rounded-2xl bg-creamSoft dark:bg-slate-800 border border-amber-500/30 space-y-3 animate-fade-in">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold mb-1">Tanggal Kegiatan</label>
+                <input type="date" id="log-date-input" required class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1">Tahapan / Agenda</label>
+                <input type="text" id="log-agenda-input" placeholder="Misal: Validasi Koordinat Peta Eropa" required class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">Hasil & Dokumentasi Output</label>
+              <input type="text" id="log-result-input" placeholder="Misal: Berhasil memverifikasi 6 titik lokasi di Spanyol, Bosnia, dan Inggris" required class="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700" />
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="btn-cancel-log" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700">Batal</button>
+              <button type="submit" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-emerald-950">Simpan Catatan</button>
+            </div>
+          </form>
+
+          <div id="group-logs-list" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+            <!-- Diisi otomatis via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 7. SUMBER-SUMBER REFERENSI WEBSITE ==================== -->
+  <section id="referensi" class="py-16 bg-emerald-950 text-white border-t-4 border-amber-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Daftar Pustaka & Validitas Data</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+            Sumber-Sumber Referensi Akademik & Arsip Dunia
+          </h2>
+          <p class="text-sm text-emerald-200/85 mt-1 max-w-2xl">
+            Seluruh narasi sejarah, data dinasti penguasa, dan titik koordinat peninggalan disusun merujuk pada literatur sejarah kredibel serta arsip situs warisan dunia UNESCO.
+          </p>
+        </div>
+
+        <!-- Filter Kategori Referensi -->
+        <div class="flex flex-wrap gap-1.5" id="ref-category-filters">
+          <button data-refcat="Semua" class="ref-cat-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 text-emerald-950 transition">Semua</button>
+          <button data-refcat="Buku Sejarah" class="ref-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition">Buku Sejarah</button>
+          <button data-refcat="Jurnal & Ensiklopedia" class="ref-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition">Jurnal & Ensiklopedia</button>
+          <button data-refcat="Arsip UNESCO" class="ref-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition">Arsip UNESCO</button>
+          <button data-refcat="Museum & Portal" class="ref-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition">Museum & Portal</button>
+        </div>
+      </div>
+
+      <div id="references-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Diisi otomatis via JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-slate-950 text-slate-400 py-8 px-4 border-t border-emerald-900/50 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <span class="w-7 h-7 rounded-lg bg-emerald-800 text-amber-400 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-mosque"></i>
+        </span>
+        <span class="font-bold text-slate-200">Jejak Peradaban & Peninggalan Sejarah Islam Dunia</span>
+      </div>
+      <p class="text-center sm:text-right">
+        Media Edukasi Interaktif Sejarah & Geografi Islam • Disusun untuk Tugas Akademik Kelompok.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Leaflet.js Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <!-- ==================== JAVASCRIPT UTAMA (DATA & LOGIKA INTERAKTIF) ==================== -->
+  <script>
+    /*************************************************************************
+     * 1. BASIS DATA SEJARAH DINASTI PENGUASA ISLAM
+     *************************************************************************/
+    const dynastiesData = [
+      {
+        id: 'khulafaur',
+        name: 'Khulafaur Rasyidin',
+        period: '632 – 661 M',
+        capital: 'Madinah & Kufah',
+        rulers: 'Abu Bakar Ash-Shiddiq, Umar bin Khattab, Utsman bin Affan, Ali bin Abi Thalib',
+        territory: 'Jazirah Arab, Syam (Suriah, Palestina, Yordania), Mesir, Irak, hingga Persia.',
+        summary: 'Era kepemimpinan pasca wafatnya Rasulullah SAW yang meletakkan fondasi administrasi negara Islam, pembebasan Baitul Maqdis, serta penyebaran Islam ke luar Jazirah Arab.',
+        relics: 'Mushaf Utsmani (kodifikasi standar Al-Qur’an), Masjid Amr bin Ash di Fustat (Mesir), dan tata kelola Baitul Mal.',
+        impact: 'Menyatukan semenanjung Arab dan membuka gerbang peradaban Islam menuju Afrika Utara dan Asia Tengah.'
+      },
+      {
+        id: 'umayyah',
+        name: 'Dinasti Umayyah',
+        period: '661 – 750 M (Damaskus) & 756 – 1031 M (Cordoba)',
+        capital: 'Damaskus & Cordoba',
+        rulers: 'Muawiyah bin Abi Sufyan, Abdul Malik bin Marwan, Umar bin Abdul Aziz, Abdurrahman Ad-Dakhil',
+        territory: 'Membentang dari Spanyol (Andalusia) di barat hingga perbatasan Sungai Indus (India) dan Transoxiana di timur.',
+        summary: 'Memperluas wilayah Islam secara masif hingga melintasi tiga benua dan melahirkan cabang kekuasaan di Andalusia yang menjadikan Eropa pusat ilmu pengetahuan.',
+        relics: 'Masjid Agung Damaskus, Kubah Shakhrah (Dome of the Rock) di Yerusalem, dan Masjid Agung Cordoba di Spanyol.',
+        impact: 'Arabisasi administrasi negara, pencetakan mata uang dinar Islam pertama, dan awal kejayaan arsitektur Islam.'
+      },
+      {
+        id: 'abbasiyah',
+        name: 'Dinasti Abbasiyah',
+        period: '750 – 1258 M',
+        capital: 'Baghdad & Samarra',
+        rulers: 'Abu Ja’far Al-Mansur, Harun Ar-Rasyid, Al-Ma’mun',
+        territory: 'Timur Tengah, Persia, Asia Tengah, dan pengaruh kultural hingga Jalur Sutra.',
+        summary: 'Dikenal sebagai Zaman Keemasan Islam (Islamic Golden Age), di mana ilmu pengetahuan, filsafat, kedokteran, astronomi, dan matematika berkembang pesat.',
+        relics: 'Baitul Hikmah (House of Wisdom) di Baghdad, Masjid Agung Samarra dengan menara spiral Malwiya, serta karya ilmiah Ibnu Sina & Al-Khawarizmi.',
+        impact: 'Menerjemahkan dan mengembangkan khazanah sains dunia yang kelak memicu Renaisans di Eropa.'
+      },
+      {
+        id: 'fatimiyah',
+        name: 'Dinasti Fatimiyah',
+        period: '909 – 1171 M',
+        capital: 'Mahdia & Kairo (Al-Qahirah)',
+        rulers: 'Al-Mu’izz li-Din Allah, Al-Aziz Billah, Al-Hakim',
+        territory: 'Afrika Utara (Tunisia, Aljazair, Maroko), Mesir, Sisilia, dan sebagian Syam.',
+        summary: 'Mendirikan kota Kairo sebagai pusat intelektual, perdagangan maritim Mediterania, dan seni kriya Islam yang sangat maju.',
+        relics: 'Masjid & Universitas Al-Azhar (970 M) di Kairo, Masjid Al-Hakim, serta gerbang kota bersejarah Bab Zuwayla.',
+        impact: 'Menjadikan Universitas Al-Azhar sebagai lembaga pendidikan tinggi Islam tertua yang masih aktif hingga kini.'
+      },
+      {
+        id: 'utsmaniyah',
+        name: 'Kesultanan Utsmaniyah',
+        period: '1299 – 1922 M',
+        capital: 'Bursa, Edirne, & Istanbul (Konstantinopel)',
+        rulers: 'Osman I, Mehmed II (Al-Fatih), Suleiman Al-Qanuni',
+        territory: 'Anatolia, Balkan (Eropa Tenggara), Timur Tengah, hingga pesisir Afrika Utara.',
+        summary: 'Salah satu imperium terkuat dan terlama dalam sejarah dunia yang menyatukan peradaban Islam di Eropa Tenggara, Asia Barat, dan Afrika Utara.',
+        relics: 'Istana Topkapi (penyimpan relik suci Nabi), Masjid Biru (Sultan Ahmed), Masjid Suleymaniye karya Mimar Sinan, dan Jembatan Stari Most di Bosnia.',
+        impact: 'Melindungi jalur haji, mengembangkan seni kaligrafi & arsitektur kubah megah, serta mewariskan komunitas Muslim di Eropa.'
+      },
+      {
+        id: 'mughal',
+        name: 'Kesultanan Mughal',
+        period: '1526 – 1857 M',
+        capital: 'Agra, Delhi, & Lahore',
+        rulers: 'Zahiruddin Babur, Akbar Agung, Shah Jahan, Aurangzeb',
+        territory: 'Hampir seluruh Anak Benua India (India, Pakistan, Bangladesh, sebagian Afghanistan).',
+        summary: 'Memadukan budaya Persia, Turki, dan India menjadi puncak estetika arsitektur, seni lukis miniatur, dan tata kota Islam di Asia Selatan.',
+        relics: 'Taj Mahal di Agra, Masjid Jama Delhi, Benteng Merah (Red Fort), dan Taman Shalimar.',
+        impact: 'Mewariskan monumen arsitektur Islam paling ikonik di dunia dan memperkaya bahasa serta budaya Asia Selatan.'
+      },
+      {
+        id: 'nusantara',
+        name: 'Kesultanan Nusantara (Pasai & Demak)',
+        period: 'Abad ke-13 – ke-17 M',
+        capital: 'Lhokseumawe (Aceh) & Demak (Jawa Tengah)',
+        rulers: 'Sultan Malik As-Saleh, Raden Patah, Sultan Trenggana, Wali Songo',
+        territory: 'Sumatera, Jawa, Semenanjung Malaya, Kalimantan, Sulawesi, hingga Maluku.',
+        summary: 'Penyebaran Islam secara damai melalui jaringan perdagangan maritim, pernikahan, pendidikan pesantren, dan akulturasi seni budaya oleh para ulama dan Wali Songo.',
+        relics: 'Kompleks Makam Sultan Malik As-Saleh (1297 M), Masjid Agung Demak dengan Saka Tatal, dan naskah-naskah kuno Melayu-Jawi.',
+        impact: 'Melahirkan Indonesia sebagai negara dengan populasi Muslim terbesar di dunia yang harmonis dengan budaya lokal.'
+      }
+    ];
+
+    /*************************************************************************
+     * 2. BASIS DATA TITIK PETA INTERAKTIF (22 LOKASI NYATA DI 4 BENUA)
+     *************************************************************************/
+    const mapLocations = [
+      // --- ASIA ---
+      {
+        id: 'makkah-kaaba',
+        name: 'Masjidil Haram & Ka’bah',
+        country: 'Arab Saudi',
+        city: 'Makkah',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Nabi Ibrahim AS, Rasulullah SAW, & Khulafaur Rasyidin',
+        year: 'Abad ke-7 M (Perluasan Berkelanjutan)',
+        lat: 21.4225,
+        lng: 39.8262,
+        story: 'Kiblat seluruh umat Islam dunia. Dibangun kembali oleh Nabi Ibrahim AS dan Nabi Ismail AS, disucikan dari berhala oleh Rasulullah SAW pada Fathu Makkah (630 M), dan diperluas sejak era Khalifah Umar bin Khattab serta Utsman bin Affan.'
+      },
+      {
+        id: 'madinah-nabawi',
+        name: 'Masjid Nabawi & Raudhah',
+        country: 'Arab Saudi',
+        city: 'Madinah',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Rasulullah SAW & Kekhalifahan Islam',
+        year: '622 M',
+        lat: 24.4672,
+        lng: 39.6111,
+        story: 'Didirikan langsung oleh Rasulullah SAW setibanya di Madinah saat peristiwa Hijrah. Menjadi pusat pemerintahan pertama umat Islam, tempat bermusyawarah, serta makam Rasulullah SAW bersama Abu Bakar dan Umar.'
+      },
+      {
+        id: 'aceh-pasai',
+        name: 'Makam Sultan Malik As-Saleh (Samudera Pasai)',
+        country: 'Indonesia',
+        city: 'Aceh Utara',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Samudera Pasai',
+        year: '1297 M (696 H)',
+        lat: 5.1408,
+        lng: 97.2056,
+        story: 'Batu nisan berukir kaligrafi Arab indah milik pendiri kerajaan Islam pertama di Nusantara, Sultan Malik As-Saleh. Menjadi bukti arkeologis terkuat masuknya Islam di Asia Tenggara melalui jalur perdagangan Gujarat dan Arab.'
+      },
+      {
+        id: 'demak-mosque',
+        name: 'Masjid Agung Demak (Saka Tatal)',
+        country: 'Indonesia',
+        city: 'Demak, Jawa Tengah',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Demak & Wali Songo',
+        year: '1479 M',
+        lat: -6.8947,
+        lng: 110.6373,
+        story: 'Masjid tertua di Pulau Jawa yang didirikan oleh Raden Patah bersama Wali Songo. Memiliki keunikan atap limas bersusun tiga khas Nusantara dan tiang utama "Saka Tatal" yang dirakit Sunan Kalijaga dari serpihan kayu.'
+      },
+      {
+        id: 'istiqlal-jakarta',
+        name: 'Masjid Istiqlal Jakarta',
+        country: 'Indonesia',
+        city: 'Jakarta',
+        continent: 'Asia',
+        category: 'Pusat Islam',
+        dynasty: 'Era Modern Republik Indonesia',
+        year: '1978 M',
+        lat: -6.1702,
+        lng: 106.8314,
+        story: 'Masjid terbesar di Asia Tenggara yang melambangkan kemerdekaan Indonesia dan toleransi beragama, terhubung langsung dengan Terowongan Silaturahmi menuju Gereja Katedral.'
+      },
+      {
+        id: 'istanbul-topkapi',
+        name: 'Istana Topkapi & Ruang Relik Suci',
+        country: 'Turki',
+        city: 'Istanbul',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Utsmaniyah (Sultan Mehmed II)',
+        year: '1459 M',
+        lat: 41.0115,
+        lng: 28.9833,
+        story: 'Pusat pemerintahan Kesultanan Utsmaniyah selama hampir 400 tahun. Di dalamnya tersimpan "Paviliun Relik Suci" berisi pedang para khalifah, jubah Nabi (Burdah), dan surat-surat diplomasi Rasulullah SAW.'
+      },
+      {
+        id: 'istanbul-hagiasophia',
+        name: 'Masjid Agung Hagia Sophia',
+        country: 'Turki',
+        city: 'Istanbul',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Utsmaniyah (Sultan Mehmed Al-Fatih)',
+        year: '1453 M (Alih Fungsi Masjid)',
+        lat: 41.0086,
+        lng: 28.9802,
+        story: 'Setelah menaklukkan Konstantinopel pada 1453 M, Sultan Mehmed Al-Fatih mengubah katedral megah ini menjadi masjid dan menambahkan 4 menara serta medali kaligrafi raksasa bertuliskan nama Allah, Muhammad, dan Khulafaur Rasyidin.'
+      },
+      {
+        id: 'india-tajmahal',
+        name: 'Taj Mahal & Masjid Jama Agra',
+        country: 'India',
+        city: 'Agra, Uttar Pradesh',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Mughal (Shah Jahan)',
+        year: '1632 – 1653 M',
+        lat: 27.1751,
+        lng: 78.0421,
+        story: 'Mahakarya arsitektur marmer putih berlapis kaligrafi surah-surah Al-Qur’an yang dibangun Kaisar Mughal Shah Jahan untuk mengenang permaisurinya Mumtaz Mahal, memadukan gaya Persia, Turki, dan India.'
+      },
+      {
+        id: 'uzbekistan-mushaf',
+        name: 'Kompleks Hast Imam (Mushaf Utsmani Tertua)',
+        country: 'Uzbekistan',
+        city: 'Tashkent',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Khulafaur Rasyidin & Dinasti Timuriyah',
+        year: '651 M (Disimpan di Tashkent sejak Abad ke-14)',
+        lat: 41.3372,
+        lng: 69.2401,
+        story: 'Di Perpustakaan Muyi Muborak kompleks Hast Imam tersimpan salah satu naskah Mushaf Al-Qur’an tertua di dunia dari era Khalifah Utsman bin Affan yang ditulis di atas kulit rusa.'
+      },
+      {
+        id: 'uzbekistan-registan',
+        name: 'Registan Samarkand (3 Madrasah Agung)',
+        country: 'Uzbekistan',
+        city: 'Samarkand',
+        continent: 'Asia',
+        category: 'Peninggalan',
+        dynasty: 'Dinasti Timuriyah (Ulugh Beg)',
+        year: '1417 – 1660 M',
+        lat: 39.6548,
+        lng: 66.9757,
+        story: 'Jantung keilmuan Jalur Sutra yang terdiri dari Madrasah Ulugh Beg, Sher-Dor, dan Tilya-Kori. Menjadi pusat pengkajian astronomi, matematika, dan ilmu agama Islam di Asia Tengah.'
+      },
+
+      // --- AFRIKA ---
+      {
+        id: 'egypt-alazhar',
+        name: 'Masjid & Universitas Al-Azhar Kairo',
+        country: 'Mesir',
+        city: 'Kairo',
+        continent: 'Afrika',
+        category: 'Peninggalan',
+        dynasty: 'Dinasti Fatimiyah (Panglima Jawhar Al-Siqilli)',
+        year: '970 M',
+        lat: 30.0457,
+        lng: 31.2627,
+        story: 'Didirikan pada masa Khalifah Al-Mu’izz dari Dinasti Fatimiyah, Al-Azhar berkembang menjadi universitas Islam tertua yang terus beroperasi dan menjadi kiblat ulama Ahlussunnah dari seluruh dunia.'
+      },
+      {
+        id: 'egypt-saladin',
+        name: 'Benteng Shalahuddin Al-Ayyubi (Citadel)',
+        country: 'Mesir',
+        city: 'Kairo',
+        continent: 'Afrika',
+        category: 'Peninggalan',
+        dynasty: 'Dinasti Ayyubiyah (Shalahuddin Al-Ayyubi)',
+        year: '1176 – 1183 M',
+        lat: 30.0287,
+        lng: 31.2599,
+        story: 'Benteng pertahanan megah di atas Bukit Mokattam yang dibangun Sultan Shalahuddin Al-Ayyubi untuk melindungi Kairo dari serangan Tentara Salib sekaligus pusat pemerintahan Dinasti Ayyubiyah.'
+      },
+      {
+        id: 'morocco-qarawiyyin',
+        name: 'Masjid & Universitas Al-Qarawiyyin',
+        country: 'Maroko',
+        city: 'Fez',
+        continent: 'Afrika',
+        category: 'Peninggalan',
+        dynasty: 'Dinasti Idrisiyah (Fatimah Al-Fihri)',
+        year: '859 M',
+        lat: 34.0649,
+        lng: -4.9733,
+        story: 'Diakui UNESCO dan Guinness World Records sebagai universitas pemberi gelar tertua di dunia yang didirikan oleh seorang muslimah dermawan bernama Fatimah Al-Fihri di kota tua Fez.'
+      },
+      {
+        id: 'mali-sankore',
+        name: 'Masjid & Universitas Sankore Timbuktu',
+        country: 'Mali',
+        city: 'Timbuktu',
+        continent: 'Afrika',
+        category: 'Peninggalan',
+        dynasty: 'Kekaisaran Mali (Mansa Musa)',
+        year: 'Abad ke-14 M',
+        lat: 16.7759,
+        lng: -3.0056,
+        story: 'Pusat peradaban intelektual Afrika Barat di era Sultan Mansa Musa. Menyimpan ratusan ribu manuskrip kuno ilmu falak, hukum Islam, dan sejarah Afrika dalam aksara Arab.'
+      },
+
+      // --- EROPA ---
+      {
+        id: 'spain-cordoba',
+        name: 'Masjid-Katedral Agung Cordoba (Mezquita)',
+        country: 'Spanyol',
+        city: 'Cordoba, Andalusia',
+        continent: 'Eropa',
+        category: 'Peninggalan',
+        dynasty: 'Keamiran & Kekhalifahan Umayyah Andalusia (Abdurrahman I)',
+        year: '785 M',
+        lat: 37.8789,
+        lng: -4.7794,
+        story: 'Simbol puncak kejayaan Islam di Eropa Barat dengan hutan 856 pilar marmer dan lengkungan tapal kuda dua tingkat berwarna merah-putih yang memukau arsitek dunia.'
+      },
+      {
+        id: 'spain-alhambra',
+        name: 'Istana Alhambra Granada',
+        country: 'Spanyol',
+        city: 'Granada, Andalusia',
+        continent: 'Eropa',
+        category: 'Peninggalan',
+        dynasty: 'Dinasti Nasrid (Sultan Muhammad I)',
+        year: '1238 – 1358 M',
+        lat: 37.1761,
+        lng: -3.5881,
+        story: 'Kompleks istana dan benteng terakhir penguasa Muslim di Spanyol. Dindingnya dipenuhi ukiran stuko ayat Al-Qur’an serta semboyan Dinasti Nasrid: "La Ghaliba Illallah" (Tiada Pemenang Selain Allah).'
+      },
+      {
+        id: 'bosnia-ghazihusrev',
+        name: 'Masjid Gazi Husrev-beg Sarajevo',
+        country: 'Bosnia & Herzegovina',
+        city: 'Sarajevo',
+        continent: 'Eropa',
+        category: 'Peninggalan',
+        dynasty: 'Kesultanan Utsmaniyah (Gazi Husrev-beg)',
+        year: '1531 M',
+        lat: 43.8592,
+        lng: 18.4292,
+        story: 'Masjid bersejarah terbesar di Bosnia dan mahakarya arsitektur Utsmaniyah di Balkan, dilengkapi perpustakaan manuskrip Islam kuno dan menara jam Sahat Kula yang masih memakai waktu lunar.'
+      },
+      {
+        id: 'uk-regentspark',
+        name: 'London Central Mosque & Islamic Cultural Centre',
+        country: 'Inggris',
+        city: 'London',
+        continent: 'Eropa',
+        category: 'Pusat Islam',
+        dynasty: 'Era Modern (Diresmikan 1977)',
+        year: '1977 M',
+        lat: 51.5326,
+        lng: -0.1636,
+        story: 'Pusat kegiatan keislaman, dialog lintas iman, dan edukasi utama umat Muslim di Inggris yang terletak di tepi Regent’s Park dengan kubah emas ikonik.'
+      },
+
+      // --- AMERIKA ---
+      {
+        id: 'usa-washington',
+        name: 'Islamic Center of Washington D.C.',
+        country: 'Amerika Serikat',
+        city: 'Washington, D.C.',
+        continent: 'Amerika',
+        category: 'Pusat Islam',
+        dynasty: 'Era Modern (Diresmikan Presiden Eisenhower)',
+        year: '1957 M',
+        lat: 38.9163,
+        lng: -77.0536,
+        story: 'Salah satu masjid dan pusat kebudayaan Islam paling bersejarah di Amerika Utara yang dibangun atas kolaborasi negara-negara Muslim untuk melayani komunitas Muslim dan diplomat di ibu kota AS.'
+      },
+      {
+        id: 'usa-metmuseum',
+        name: 'Galeri Seni Islam The Metropolitan Museum of Art',
+        country: 'Amerika Serikat',
+        city: 'New York City',
+        continent: 'Amerika',
+        category: 'Peninggalan',
+        dynasty: 'Koleksi Lintas Dinasti (Umayyah, Abbasiyah, Mamluk, Mughal)',
+        year: 'Koleksi Abad ke-7 hingga ke-19 M',
+        lat: 40.7794,
+        lng: -73.9632,
+        story: 'Menyimpan lebih dari 15.000 artefak peninggalan penguasa Islam terdahulu, termasuk mihrab keramik dari Isfahan, pedang upacara Sultan Utsmaniyah, dan karpet istana Safawiyah.'
+      },
+      {
+        id: 'brazil-saopaulo',
+        name: 'Masjid Brasil (Mesquita Brasil) São Paulo',
+        country: 'Brasil',
+        city: 'São Paulo',
+        continent: 'Amerika',
+        category: 'Pusat Islam',
+        dynasty: 'Era Modern (Komunitas Muslim Suriah-Lebanon)',
+        year: '1929 – 1956 M',
+        lat: -23.5621,
+        lng: -46.6319,
+        story: 'Masjid tertua di Amerika Selatan yang menjadi pusat aktivitas komunitas Muslim, pendidikan bahasa Arab, serta kajian sejarah Muslim Afrika (Malê) di Brasil.'
+      }
+    ];
+
+    /*************************************************************************
+     * 3. BASIS DATA EKSPLORASI BENUA & NEGARA (13 NEGARA LENGKAP)
+     *************************************************************************/
+    const countriesData = [
+      // ==================== BENUA ASIA ====================
+      {
+        id: 'saudi',
+        continent: 'Asia',
+        name: 'Arab Saudi',
+        capital: 'Riyadh (Kota Suci: Makkah & Madinah)',
+        eraEntry: 'Abad ke-7 M (610 M)',
+        mainDynasty: 'Kenabian, Khulafaur Rasyidin, Umayyah, Abbasiyah, hingga Kerajaan Arab Saudi',
+        mapTargetId: 'makkah-kaaba',
+        historyEntry: 'Islam lahir dan pertama kali diturunkan di Kota Makkah melalui wahyu pertama kepada Nabi Muhammad SAW di Gua Hira pada tahun 610 M. Setelah 13 tahun berdakwah di Makkah, Rasulullah SAW berhijrah ke Madinah pada 622 M dan mendirikan masyarakat madani pertama yang mempersatukan suku Aus, Khazraj, dan kaum Muhajirin.',
+        pastRelics: {
+          ruler: 'Rasulullah SAW, Khulafaur Rasyidin, & Kesultanan Utsmaniyah',
+          artifact: 'Masjidil Haram & Ka’bah, Masjid Nabawi, serta Manuskrip & Prasasti Kufic Awal',
+          story: 'Ka’bah sebagai pusat kiblat umat Islam dibangun kembali oleh Nabi Ibrahim AS dan Nabi Ismail AS. Pada masa Khulafaur Rasyidin hingga Utsmaniyah, kawasan Masjidil Haram dan Masjid Nabawi terus diperluas dengan serambi marmer, kubah hijau di atas makam Rasulullah SAW, serta ratusan prasasti batu bertuliskan aksara Kufic di jalur ziarah kuno.',
+          locationName: 'Makkah & Madinah, Arab Saudi (21.4225° LU, 39.8262° BT)'
+        },
+        islamicCenters: [
+          'Masjidil Haram (Makkah) & Masjid Nabawi (Madinah) sebagai pusat ibadah jutaan jamaah haji dan umrah.',
+          'Universitas Islam Madinah & Universitas Umm Al-Qura Makkah sebagai pusat studi syariah dan bahasa Arab.',
+          'Kompleks Percetakan Al-Qur’an Raja Fahd di Madinah yang mencetak jutaan mushaf untuk seluruh dunia.'
+        ],
+        modernDevelopment: 'Saat ini Arab Saudi menjadi pusat koordinasi organisasi Islam dunia seperti Liga Muslim Dunia (MWL) dan OKI (Organisasi Kerja Sama Islam), sembari melakukan modernisasi infrastruktur pelayanan haji dan umrah berbasis teknologi digital.'
+      },
+      {
+        id: 'indonesia',
+        continent: 'Asia',
+        name: 'Indonesia',
+        capital: 'Jakarta',
+        eraEntry: 'Abad ke-7 – ke-13 M',
+        mainDynasty: 'Kesultanan Samudera Pasai, Aceh Darussalam, Demak, Mataram Islam, Ternate-Tidore',
+        mapTargetId: 'aceh-pasai',
+        historyEntry: 'Islam masuk ke Nusantara secara damai melalui jalur perdagangan maritim internasional yang menghubungkan Timur Tengah, Gujarat (India), dan Tiongkok. Pedagang Muslim sudah singgah sejak abad ke-7 M di pesisir Sumatera, lalu berkembang menjadi kekuatan politik Islam pertama pada abad ke-13 M dengan berdirinya Kesultanan Samudera Pasai di Aceh.',
+        pastRelics: {
+          ruler: 'Sultan Malik As-Saleh (Samudera Pasai) & Raden Patah bersama Wali Songo (Demak)',
+          artifact: 'Batu Nisan Sultan Malik As-Saleh (1297 M) & Masjid Agung Demak (Saka Tatal)',
+          story: 'Batu nisan marmer berukir kaligrafi Arab milik Sultan Malik As-Saleh di Aceh Utara menjadi saksi bisu berdirinya kerajaan Islam pertama di Asia Tenggara. Sementara di Jawa, Masjid Agung Demak (1479 M) memadukan arsitektur atap tumpang tiga khas Nusantara dengan ajaran tauhid melalui dakwah kultural Wali Songo.',
+          locationName: 'Aceh Utara & Demak, Jawa Tengah, Indonesia'
+        },
+        islamicCenters: [
+          'Masjid Istiqlal Jakarta (masjid terbesar di Asia Tenggara) & Masjid Raya Baiturrahman Aceh.',
+          'Jaringan ribuan Pondok Pesantren tradisional & modern (seperti Gontor, Tebuireng, Lirboyo) serta UIN di berbagai provinsi.',
+          'Organisasi masyarakat Islam besar seperti Nahdlatul Ulama (NU) dan Muhammadiyah.'
+        ],
+        modernDevelopment: 'Indonesia merupakan negara dengan populasi Muslim terbesar di dunia (±240 juta jiwa) yang dikenal dengan wajah Islam moderat (Wasathiyah), berkembang pesatnya ekonomi syariah, perbankan syariah, serta industri halal global.'
+      },
+      {
+        id: 'turki',
+        continent: 'Asia',
+        name: 'Turki',
+        capital: 'Ankara (Pusat Sejarah: Istanbul)',
+        eraEntry: 'Abad ke-10 – ke-11 M (Era Seljuk & Utsmaniyah)',
+        mainDynasty: 'Kesultanan Seljuk Rum & Kesultanan Utsmaniyah (Ottoman)',
+        mapTargetId: 'istanbul-topkapi',
+        historyEntry: 'Suku-suku Turkik mulai memeluk Islam secara luas pada abad ke-10 M di Asia Tengah. Setelah kemenangan Kesultanan Seljuk pada Pertempuran Manzikert (1071 M), Islam mengakar kuat di Anatolia hingga puncaknya saat Sultan Mehmed II (Al-Fatih) dari Kesultanan Utsmaniyah menaklukkan Konstantinopel pada tahun 1453 M.',
+        pastRelics: {
+          ruler: 'Sultan Mehmed Al-Fatih & Sultan Suleiman Al-Qanuni (Kesultanan Utsmaniyah)',
+          artifact: 'Istana Topkapi (Paviliun Relik Suci), Masjid Agung Hagia Sophia, & Masjid Biru',
+          story: 'Istana Topkapi menjadi pusat administrasi imperium Utsmaniyah selama empat abad dan menyimpan benda-benda paling bersejarah dalam Islam, seperti pedang Rasulullah SAW, pedang para Khulafaur Rasyidin, dan surat-surat kenabian. Sementara Hagia Sophia diubah menjadi masjid setelah penaklukan 1453 M dengan tambahan menara dan kaligrafi megah.',
+          locationName: 'Sultanahmet, Fatih, Istanbul, Turki (41.0115° LU, 28.9833° BT)'
+        },
+        islamicCenters: [
+          'Masjid Suleymaniye & Masjid Sultan Ahmed (Blue Mosque) di Istanbul sebagai pusat ibadah dan kajian keislaman.',
+          'Diyanet (Direktorat Urusan Agama Turki) dan fakultas teologi Islam (Ilahiyat) di Universitas Istanbul & Ankara.',
+          'IRCICA (Research Centre for Islamic History, Art and Culture) di bawah naungan OKI.'
+        ],
+        modernDevelopment: 'Turki modern menjadi jembatan budaya antara Timur dan Barat, dengan pelestarian warisan arsitektur Utsmaniyah yang sangat terawat, pertumbuhan wisata halal, serta aktif dalam diplomasi kemanusiaan dunia Islam.'
+      },
+      {
+        id: 'india',
+        continent: 'Asia',
+        name: 'India',
+        capital: 'New Delhi',
+        eraEntry: 'Abad ke-7 – ke-12 M',
+        mainDynasty: 'Kesultanan Delhi & Kesultanan Mughal',
+        mapTargetId: 'india-tajmahal',
+        historyEntry: 'Islam pertama kali tiba di pesisir Malabar (Kerala) melalui pedagang Arab pada abad ke-7 M—di mana Masjid Cheraman Juma dibangun tahun 629 M. Ekspansi kekuasaan Islam di India Utara dimulai pada abad ke-8 M di Sindh dan mencapai puncak keemasannya pada era Kesultanan Delhi (1206–1526 M) serta Kesultanan Mughal (1526–1857 M).',
+        pastRelics: {
+          ruler: 'Kaisar Shah Jahan & Jalaluddin Akbar (Kesultanan Mughal)',
+          artifact: 'Taj Mahal di Agra, Masjid Jama Delhi, & Kompleks Qutb Minar',
+          story: 'Taj Mahal dibangun oleh Kaisar Mughal Shah Jahan antara tahun 1632–1653 M menggunakan marmer putih pilihan dengan tata taman Chahar Bagh yang melambangkan taman surga dalam Al-Qur’an, dihiasi kaligrafi surah Yasin dan Al-Fajr oleh kaligrafer Amanat Khan.',
+          locationName: 'Agra & Old Delhi, India (27.1751° LU, 78.0421° BT)'
+        },
+        islamicCenters: [
+          'Masjid Jama Delhi (dibangun Shah Jahan, menampung lebih dari 25.000 jamaah).',
+          'Darul Uloom Deoband dan Jamia Millia Islamia di New Delhi sebagai pusat pendidikan Islam ternama.',
+          'Masjid Makkah di Hyderabad dan Masjid Cheraman Juma di Kerala.'
+        ],
+        modernDevelopment: 'India merupakan rumah bagi lebih dari 200 juta umat Muslim (salah satu populasi Muslim terbesar di dunia) yang berkontribusi besar dalam seni, sastra Urdu, kuliner, perfilman, dan ilmu pengetahuan.'
+      },
+      {
+        id: 'uzbekistan',
+        continent: 'Asia',
+        name: 'Uzbekistan',
+        capital: 'Tashkent',
+        eraEntry: 'Abad ke-8 M (705 – 715 M)',
+        mainDynasty: 'Dinasti Umayyah, Samaniyah, & Dinasti Timuriyah',
+        mapTargetId: 'uzbekistan-mushaf',
+        historyEntry: 'Islam masuk ke wilayah Transoxiana (Asia Tengah) pada awal abad ke-8 M melalui ekspedisi Qutaibah bin Muslim pada masa Dinasti Umayyah. Kota-kota di Uzbekistan seperti Bukhara dan Samarkand segera tumbuh menjadi mercusuar intelektual dunia Islam yang melahirkan ulama besar seperti Imam Al-Bukhari dan Ibnu Sina.',
+        pastRelics: {
+          ruler: 'Khalifah Utsman bin Affan (Mushaf) & Amir Timur / Ulugh Beg (Dinasti Timuriyah)',
+          artifact: 'Mushaf Utsmani Tashkent (Abad ke-7 M) & Kompleks Registan Samarkand',
+          story: 'Di Perpustakaan Muyi Muborak (Tashkent) tersimpan Mushaf Utsmani kuno di atas lembaran kulit rusa yang dibawa ke Samarkand oleh Amir Timur pada abad ke-14. Sementara Registan Samarkand menampilkan tiga madrasah berkeramik biru pirus yang menjadi pusat observatorium astronomi Ulugh Beg.',
+          locationName: 'Tashkent & Samarkand, Uzbekistan (41.3372° LU, 69.2401° BT)'
+        },
+        islamicCenters: [
+          'Kompleks Imam Al-Bukhari di dekat Samarkand sebagai pusat studi hadis dan ziarah keilmuan.',
+          'Kompleks Hast Imam di Tashkent dan Madrasah Mir-i-Arab di Bukhara.',
+          'Akademi Islam Internasional Uzbekistan.'
+        ],
+        modernDevelopment: 'Pasca kemerdekaan dari Uni Soviet pada 1991, Uzbekistan menghidupkan kembali identitas keislamannya melalui restorasi besar-besaran situs Jalur Sutra dan pengembangan wisata ziarah sejarah Islam internasional.'
+      },
+
+      // ==================== BENUA AFRIKA ====================
+      {
+        id: 'mesir',
+        continent: 'Afrika',
+        name: 'Mesir',
+        capital: 'Kairo',
+        eraEntry: '639 – 641 M (Era Khalifah Umar bin Khattab)',
+        mainDynasty: 'Khulafaur Rasyidin, Fatimiyah, Ayyubiyah, & Kesultanan Mamluk',
+        mapTargetId: 'egypt-alazhar',
+        historyEntry: 'Islam masuk ke Mesir pada tahun 639 M dipimpin oleh panglima Amr bin Ash atas perintah Khalifah Umar bin Khattab. Amr bin Ash mendirikan kota Fustat dan membangun masjid pertama di benua Afrika, menjadikan Mesir pintu gerbang utama penyebaran Islam ke seluruh Afrika Utara.',
+        pastRelics: {
+          ruler: 'Khalifah Al-Mu’izz (Dinasti Fatimiyah) & Sultan Shalahuddin Al-Ayyubi',
+          artifact: 'Masjid & Universitas Al-Azhar (970 M) serta Benteng Shalahuddin Al-Ayyubi',
+          story: 'Masjid Al-Azhar dibangun pada era Dinasti Fatimiyah dan berkembang menjadi pusat keilmuan Islam sunni terkemuka sejak era Sultan Shalahuddin Al-Ayyubi. Shalahuddin juga membangun Benteng Kairo (Citadel) yang tangguh sebagai pusat pertahanan dan pemerintahan.',
+          locationName: 'Islamic Cairo, Kairo, Mesir (30.0457° LU, 31.2627° BT)'
+        },
+        islamicCenters: [
+          'Universitas Al-Azhar Kairo yang menampung puluhan ribu mahasiswa internasional termasuk ribuan pelajar dari Indonesia.',
+          'Masjid Amr bin Ash (masjid tertua di Afrika) & Masjid Sultan Hasan.',
+          'Dar Al-Ifta Al-Misriyyah sebagai lembaga fatwa rujukan dunia Arab.'
+        ],
+        modernDevelopment: 'Mesir tetap menjadi pusat intelektual dan literasi keislaman dunia melalui Al-Azhar, penerbitan kitab-kitab turats, serta pelestarian kawasan Kairo Bersejarah sebagai Situs Warisan Dunia UNESCO.'
+      },
+      {
+        id: 'maroko',
+        continent: 'Afrika',
+        name: 'Maroko',
+        capital: 'Rabat (Pusat Sejarah: Fez & Marrakech)',
+        eraEntry: '681 – 705 M',
+        mainDynasty: 'Dinasti Idrisiyah, Murabithun, Muwahhidun, & Dinasti Alawiyah',
+        mapTargetId: 'morocco-qarawiyyin',
+        historyEntry: 'Islam tiba di wilayah Maghrib Al-Aqsha (Maroko) melalui ekspedisi Uqbah bin Nafi pada akhir abad ke-7 M dan dikukuhkan oleh Musa bin Nusair bersama suku asli Amazigh (Berber). Dari Maroko inilah Thariq bin Ziyad menyeberangi Selat Gibraltar menuju Andalusia pada 711 M.',
+        pastRelics: {
+          ruler: 'Dinasti Idrisiyah (Fatimah Al-Fihri) & Dinasti Muwahhidun',
+          artifact: 'Masjid & Universitas Al-Qarawiyyin Fez (859 M) serta Masjid Koutoubia Marrakech',
+          story: 'Didirikan pada tahun 859 M oleh Fatimah Al-Fihri, seorang perempuan Muslimah terpelajar, Universitas Al-Qarawiyyin di Kota Fez diakui UNESCO sebagai lembaga pendidikan tinggi pemberi gelar tertua di dunia yang melahirkan cendekiawan seperti Ibnu Khaldun dan Ibnu Rusyd.',
+          locationName: 'Fes el-Bali, Fez, Maroko (34.0649° LU, 4.9733° BB)'
+        },
+        islamicCenters: [
+          'Universitas Al-Qarawiyyin di Fez & Masjid Hassan II di Casablanca (memiliki menara masjid setinggi 210 meter).',
+          'Lembaga Pelatihan Imam Mohammed VI di Rabat yang menjadi rujukan moderasi beragama di Afrika dan Eropa.'
+        ],
+        modernDevelopment: 'Maroko memadukan tradisi keilmuan tasawuf-Maliki yang moderat dengan pelestarian arsitektur seni zellij (mosaik keramik) dan medina kuno yang menjadi pusat kebudayaan Islam Afrika Utara.'
+      },
+      {
+        id: 'mali',
+        continent: 'Afrika',
+        name: 'Mali',
+        capital: 'Bamako (Pusat Sejarah: Timbuktu)',
+        eraEntry: 'Abad ke-11 M',
+        mainDynasty: 'Kekaisaran Mali (Mansa Musa) & Kekaisaran Songhai',
+        mapTargetId: 'mali-sankore',
+        historyEntry: 'Islam masuk ke Afrika Barat melalui jalur perdagangan trans-Sahara yang menghubungkan pedagang Muslim Afrika Utara dengan Kerajaan Mali. Pada abad ke-11 M para penguasa Mali mulai memeluk Islam, dan mencapai puncak kejayaan pada abad ke-14 M di bawah kepemimpinan Sultan Mansa Musa.',
+        pastRelics: {
+          ruler: 'Sultan Mansa Musa (Kekaisaran Mali) & Askia Muhammad (Songhai)',
+          artifact: 'Masjid & Universitas Sankore serta Masjid Djinguereber Timbuktu (1327 M)',
+          story: 'Setelah menunaikan ibadah haji yang legendaris pada 1324 M, Mansa Musa membawa para arsitek dan ulama ke Timbuktu. Ia membangun Masjid Djinguereber dari bata lumpur (adobe) dan kayu serta mengembangkan Universitas Sankore yang menyimpan hingga 700.000 manuskrip kuno ilmu agama, astronomi, dan hukum.',
+          locationName: 'Timbuktu, Mali (16.7759° LU, 3.0056° BB)'
+        },
+        islamicCenters: [
+          'Kompleks Tiga Masjid Bersejarah Timbuktu (Djinguereber, Sankore, Sidi Yahia).',
+          'Institut Ahmed Baba untuk Dokumentasi dan Riset Sejarah di Timbuktu.'
+        ],
+        modernDevelopment: 'Upaya pelestarian digital ribuan manuskrip kuno Timbuktu terus dilakukan oleh akademisi lokal dan internasional untuk menjaga warisan intelektual Islam Afrika Barat bagi generasi mendatang.'
+      },
+
+      // ==================== BENUA EROPA ====================
+      {
+        id: 'spanyol',
+        continent: 'Eropa',
+        name: 'Spanyol (Andalusia)',
+        capital: 'Madrid (Pusat Sejarah: Cordoba & Granada)',
+        eraEntry: '711 M (Ekspedisi Thariq bin Ziyad)',
+        mainDynasty: 'Keamiran & Kekhalifahan Umayyah Andalusia (756–1031 M) & Dinasti Nasrid (1238–1492 M)',
+        mapTargetId: 'spain-cordoba',
+        historyEntry: 'Islam masuk ke Semenanjung Iberia (Andalusia) pada tahun 711 M ketika panglima Thariq bin Ziyad menyeberangi selat yang kini bernama Jabal Thariq (Gibraltar). Pada masa Khalifah Abdurrahman III (abad ke-10 M), Cordoba menjadi kota paling maju, terang benderang, dan berbudaya di seluruh Eropa.',
+        pastRelics: {
+          ruler: 'Abdurrahman I (Dinasti Umayyah) & Sultan Muhammad I (Dinasti Nasrid)',
+          artifact: 'Masjid Agung Cordoba (Mezquita) & Istana Alhambra Granada',
+          story: 'Masjid Agung Cordoba dibangun mulai 785 M dengan ratusan pilar batu akik, jasper, dan marmer yang menopang lengkungan tapal kuda ikonik. Sementara Istana Alhambra di Granada menampilkan puncak kehalusan kaligrafi Arab, taman air, dan geometri Islam sebelum berakhirnya kekuasaan Nasrid pada 1492 M.',
+          locationName: 'Cordoba & Granada, Andalusia, Spanyol (37.8789° LU, 4.7794° BB)'
+        },
+        islamicCenters: [
+          'Centro Cultural Islámico de Madrid (Masjid M-30) sebagai pusat kebudayaan Islam terbesar di Spanyol.',
+          'Masjid Agung Granada di kawasan bersejarah Albaicín yang menghadap langsung ke Istana Alhambra.'
+        ],
+        modernDevelopment: 'Saat ini terdapat lebih dari 2,3 juta umat Muslim di Spanyol. Warisan Andalusia menjadi daya tarik studi sejarah dan pariwisata halal dunia, diiringi tumbuhnya komunitas Muslim lokal di Madrid, Barcelona, dan Granada.'
+      },
+      {
+        id: 'bosnia',
+        continent: 'Eropa',
+        name: 'Bosnia & Herzegovina',
+        capital: 'Sarajevo',
+        eraEntry: 'Abad ke-15 M (1463 M)',
+        mainDynasty: 'Kesultanan Utsmaniyah (Ottoman)',
+        mapTargetId: 'bosnia-ghazihusrev',
+        historyEntry: 'Islam mulai berkembang luas di Bosnia & Herzegovina pada pertengahan abad ke-15 M seiring masuknya pengaruh Kesultanan Utsmaniyah di wilayah Balkan di bawah Sultan Mehmed Al-Fatih. Masyarakat lokal (Bosniak) memeluk Islam secara bertahap dan menjadikan Sarajevo sebagai pusat peradaban Islam Eropa Tenggara.',
+        pastRelics: {
+          ruler: 'Gazi Husrev-beg & Sultan Suleiman Al-Qanuni (Kesultanan Utsmaniyah)',
+          artifact: 'Masjid Gazi Husrev-beg Sarajevo (1531 M) & Jembatan Stari Most Mostar (1566 M)',
+          story: 'Gazi Husrev-beg membangun masjid, madrasah, perpustakaan, dan pasar Baščaršija di Sarajevo yang menjadikan kota ini dijuluki "Yerusalem Eropa" karena berdampingannya masjid, katedral, gereja ortodoks, dan sinagoga dalam satu kawasan.',
+          locationName: 'Baščaršija, Sarajevo, Bosnia & Herzegovina (43.8592° LU, 18.4292° BT)'
+        },
+        islamicCenters: [
+          'Kompleks Masjid & Perpustakaan Gazi Husrev-beg di Sarajevo (menyimpan ribuan manuskrip Arab, Turki, dan Persia).',
+          'Fakultas Studi Islam (Fakultet Islamskih Nauka) Universitas Sarajevo.'
+        ],
+        modernDevelopment: 'Umat Muslim Bosniak mencakup lebih dari 50% populasi negara ini, menjadikan Bosnia & Herzegovina salah satu negara dengan populasi mayoritas Muslim asli di benua Eropa yang aktif menjaga kerukunan antarumat beragama.'
+      },
+      {
+        id: 'inggris',
+        continent: 'Eropa',
+        name: 'Inggris (United Kingdom)',
+        capital: 'London',
+        eraEntry: 'Abad ke-17 – ke-19 M (Jalur Maritim & Pelaut Yaman/India)',
+        mainDynasty: 'Komunitas Muslim Awal Liverpool (Abdullah Quilliam) & Era Modern',
+        mapTargetId: 'uk-regentspark',
+        historyEntry: 'Kontak awal antara dunia Islam dan Inggris terjadi melalui diplomasi Ratu Elizabeth I dengan Kesultanan Utsmaniyah dan Maroko pada abad ke-16 M. Komunitas Muslim permanen mulai terbentuk pada abad ke-19 M di kota pelabuhan seperti Liverpool, Cardiff, dan London—ditandai pendirian masjid pertama di Liverpool oleh Abdullah Quilliam pada 1889.',
+        pastRelics: {
+          ruler: 'Koleksi Bersejarah di British Museum & Victoria and Albert Museum London',
+          artifact: 'Astrolab Astronomi Islam Abad ke-13, Keramik Iznik, & Manuskrip Al-Qur’an Kuno',
+          story: 'Inggris menyimpan salah satu koleksi artefak peradaban Islam terlengkap di Eropa di Galeri Dunia Islam Albukhary Foundation (British Museum), termasuk astrolab navigasi karya ilmuwan Muslim, keramik Dinasti Abbasiyah, dan tekstil Utsmaniyah.',
+          locationName: 'Regent’s Park & Bloomsbury, London, Inggris (51.5326° LU, 0.1636° BB)'
+        },
+        islamicCenters: [
+          'London Central Mosque & Islamic Cultural Centre di Regent’s Park.',
+          'East London Mosque (Whitechapel) dan Masjid Shah Jahan Woking (masjid pertama yang dibangun khusus di Inggris pada 1889).',
+          'Oxford Centre for Islamic Studies di Universitas Oxford.'
+        ],
+        modernDevelopment: 'Inggris memiliki lebih dari 3,9 juta umat Muslim yang berperan aktif dalam pendidikan, kesehatan, pemerintahan (termasuk Wali Kota London), serta sektor keuangan syariah terkemuka di Eropa.'
+      },
+
+      // ==================== BENUA AMERIKA ====================
+      {
+        id: 'usa',
+        continent: 'Amerika',
+        name: 'Amerika Serikat',
+        capital: 'Washington, D.C.',
+        eraEntry: 'Abad ke-16 – ke-18 M (Muslim Afrika Barat) & Gelombang Imigrasi Modern',
+        mainDynasty: 'Sejarah Muslim Afrika Barat (Omar ibn Said) & Institusi Islam Modern',
+        mapTargetId: 'usa-washington',
+        historyEntry: 'Catatan sejarah menunjukkan bahwa sekitar 15–30% penduduk Afrika Barat yang dibawa ke benua Amerika pada abad ke-17 hingga ke-19 adalah umat Muslim terpelajar—seperti Omar ibn Said dan Ayuba Suleiman Diallo yang menulis otobiografi dalam bahasa Arab. Gelombang komunitas Muslim modern kemudian tumbuh pesat sejak akhir abad ke-19 dan abad ke-20.',
+        pastRelics: {
+          ruler: 'Koleksi Warisan Lintas Dinasti Islam & Manuskrip Muslim Amerika Awal',
+          artifact: 'Galeri Seni Islam The Metropolitan Museum of Art New York & Manuskrip Omar ibn Said',
+          story: 'The Metropolitan Museum of Art di New York menyimpan lebih dari 15.000 peninggalan penguasa Islam terdahulu dari seluruh dunia, mulai dari Mihrab Keramik Isfahan (1354 M), Ruang Damaskus era Utsmaniyah, hingga koleksi senjata dan kaligrafi Mughal. Sementara Perpustakaan Kongres AS menyimpan manuskrip asli tulisan tangan Omar ibn Said (1831).',
+          locationName: 'Washington, D.C. & New York City, AS (38.9163° LU, 77.0536° BB)'
+        },
+        islamicCenters: [
+          'Islamic Center of Washington, D.C. (diresmikan tahun 1957 sebagai pusat diplomasi dan ibadah).',
+          'Islamic Center of America di Dearborn, Michigan (salah satu masjid terbesar di Amerika Utara).',
+          'Zaytuna College di Berkeley, California (perguruan tinggi Islam terakreditasi pertama di AS).'
+        ],
+        modernDevelopment: 'Saat ini terdapat lebih dari 3,5 hingga 4 juta umat Muslim di Amerika Serikat dengan hampir 3.000 masjid yang aktif dalam kegiatan sosial, pendidikan, filantropi, dan dialog lintas budaya.'
+      },
+      {
+        id: 'brasil',
+        continent: 'Amerika',
+        name: 'Brasil',
+        capital: 'Brasília (Pusat Sejarah: Salvador & São Paulo)',
+        eraEntry: 'Abad ke-16 – ke-19 M (Muslim Malê) & Abad ke-20 (Imigran Timur Tengah)',
+        mainDynasty: 'Komunitas Muslim Malê (Bahia) & Komunitas Islam Modern São Paulo',
+        mapTargetId: 'brazil-saopaulo',
+        historyEntry: 'Sejarah Islam di Brasil berakar kuat pada abad ke-18 dan ke-19 M melalui para Muslim Afrika Barat (dikenal sebagai kaum Malê) di Salvador da Bahia yang mempertahankan hafalan Al-Qur’an dan tradisi tulisan Arab. Pada abad ke-20, gelombang imigran Muslim dari Lebanon, Suriah, dan Palestina memperkokoh organisasi Islam di São Paulo dan Curitiba.',
+        pastRelics: {
+          ruler: 'Warisan Intelektual Muslim Malê & Arsitektur Masjid Awal Amerika Selatan',
+          artifact: 'Masjid Brasil (Mesquita Brasil) São Paulo & Arsip Manuskrip Arab Bahia',
+          story: 'Didirikan oleh Sociedade Beneficente Muçulmana pada 1929 dan diresmikan bangunan berkubahnya pada 1956, Mesquita Brasil di São Paulo merupakan masjid tertua di seluruh benua Amerika Selatan yang menjadi pusat pelestarian sejarah Islam di Brasil.',
+          locationName: 'Cambuci, São Paulo, Brasil (23.5621° LS, 46.6319° BB)'
+        },
+        islamicCenters: [
+          'Mesquita Brasil di São Paulo dan Mesquita Omar Ibn Al-Khattab di Foz do Iguaçu.',
+          'FAMBRAS (Federasi Asosiasi Muslim Brasil) sebagai pusat sertifikasi halal dan edukasi Islam di Amerika Latin.'
+        ],
+        modernDevelopment: 'Brasil kini menjadi salah satu eksportir produk daging dan pangan halal terbesar di dunia ke negara-negara Timur Tengah dan Asia, seiring meningkatnya kesadaran masyarakat terhadap sejarah Islam di Amerika Selatan.'
+      }
+    ];
+
+    /*************************************************************************
+     * 4. BASIS DATA KUIS INTERAKTIF (10 SOAL + PEMBAHASAN SEJARAH)
+     *************************************************************************/
+    const quizQuestions = [
+      {
+        topic: 'Sejarah Masuknya Islam (Nusantara)',
+        question: 'Kesultanan Islam pertama di Nusantara yang didirikan oleh Sultan Malik As-Saleh pada abad ke-13 M dan meninggalkan bukti arkeologis batu nisan berkaligrafi Arab berada di wilayah...',
+        options: [
+          'Kesultanan Demak di Jawa Tengah',
+          'Kesultanan Samudera Pasai di Aceh Utara',
+          'Kesultanan Gowa-Tallo di Sulawesi Selatan',
+          'Kesultanan Ternate di Maluku Utara'
+        ],
+        correct: 1,
+        explanation: 'Kesultanan Samudera Pasai di Aceh Utara didirikan oleh Sultan Malik As-Saleh (wafat 1297 M / 696 H). Makam dan batu nisannya menjadi bukti arkeologis utama penyebaran Islam di Asia Tenggara melalui jalur perdagangan.'
+      },
+      {
+        topic: 'Geolokasi Artefak Sejarah',
+        question: 'Di kota dan negara manakah naskah Mushaf Al-Qur’an tertua dari era Khalifah Utsman bin Affan yang ditulis di atas kulit rusa saat ini disimpan dan dapat dikunjungi?',
+        options: [
+          'Kompleks Hast Imam, Tashkent, Uzbekistan',
+          'Istana Alhambra, Granada, Spanyol',
+          'Masjid Al-Qarawiyyin, Fez, Maroko',
+          'Masjid Jama, New Delhi, India'
+        ],
+        correct: 0,
+        explanation: 'Mushaf Utsmani kuno yang ditulis pada abad ke-7 M tersimpan di Perpustakaan Muyi Muborak, Kompleks Hast Imam, Kota Tashkent, Uzbekistan.'
+      },
+      {
+        topic: 'Peninggalan Dinasti Fatimiyah',
+        question: 'Masjid sekaligus universitas tertua di dunia yang didirikan pada tahun 970 M oleh Dinasti Fatimiyah di Kota Kairo, Mesir, adalah...',
+        options: [
+          'Universitas Al-Qarawiyyin',
+          'Baitul Hikmah',
+          'Universitas Al-Azhar',
+          'Madrasah Ulugh Beg'
+        ],
+        correct: 2,
+        explanation: 'Masjid dan Universitas Al-Azhar didirikan pada tahun 970 M pada masa Khalifah Al-Mu’izz dari Dinasti Fatimiyah, dan hingga kini menjadi pusat rujukan ulama dunia.'
+      },
+      {
+        topic: 'Peninggalan Kesultanan Mughal',
+        question: 'Taj Mahal di Kota Agra, India, merupakan mahakarya arsitektur marmer putih berlapis kaligrafi Al-Qur’an yang dibangun pada masa pemerintahan...',
+        options: [
+          'Sultan Mehmed Al-Fatih (Kesultanan Utsmaniyah)',
+          'Kaisar Shah Jahan (Kesultanan Mughal)',
+          'Khalifah Harun Ar-Rasyid (Dinasti Abbasiyah)',
+          'Sultan Mansa Musa (Kekaisaran Mali)'
+        ],
+        correct: 1,
+        explanation: 'Taj Mahal dibangun oleh Kaisar Mughal Shah Jahan antara tahun 1632–1653 M sebagai monumen cinta dan keindahan arsitektur Islam-Persia-India.'
+      },
+      {
+        topic: 'Sejarah Islam di Eropa (Andalusia)',
+        question: 'Semboyan kaligrafi Arab "La Ghaliba Illallah" (Tiada Pemenang Selain Allah) terukir ribuan kali pada dinding Istana Alhambra di Granada, Spanyol, yang merupakan peninggalan...',
+        options: [
+          'Dinasti Nasrid',
+          'Dinasti Idrisiyah',
+          'Kesultanan Seljuk',
+          'Dinasti Ayyubiyah'
+        ],
+        correct: 0,
+        explanation: 'Istana Alhambra di Granada dibangun oleh Dinasti Nasrid (1238–1492 M) sebagai benteng dan istana terakhir penguasa Muslim di Andalusia.'
+      },
+      {
+        topic: 'Peradaban Islam di Afrika',
+        question: 'Siapakah tokoh Muslimah terpelajar pada masa Dinasti Idrisiyah yang mendirikan Masjid dan Universitas Al-Qarawiyyin di Kota Fez, Maroko, pada tahun 859 M?',
+        options: [
+          'Ratu Shajar Ad-Durr',
+          'Fatimah Al-Fihri',
+          'Zubaidah binti Ja’far',
+          'Sultanah Safiatuddin'
+        ],
+        correct: 1,
+        explanation: 'Fatimah Al-Fihri mewakafkan hartanya pada tahun 859 M untuk membangun Masjid dan Universitas Al-Qarawiyyin di Fez, Maroko, yang diakui UNESCO sebagai universitas tertua di dunia.'
+      },
+      {
+        topic: 'Peninggalan Kesultanan Utsmaniyah',
+        question: 'Setelah menaklukkan Konstantinopel pada tahun 1453 M, Sultan Mehmed II (Al-Fatih) mendirikan pusat pemerintahan yang kini menyimpan Paviliun Relik Suci (pedang dan jubah Nabi), yaitu...',
+        options: [
+          'Benteng Shalahuddin Al-Ayyubi',
+          'Istana Topkapi',
+          'Istana Qasr Al-Badi',
+          'Benteng Merah Delhi'
+        ],
+        correct: 1,
+        explanation: 'Istana Topkapi di Istanbul mulai dibangun pada 1459 M oleh Sultan Mehmed Al-Fatih dan menjadi pusat pemerintahan Utsmaniyah selama hampir 400 tahun.'
+      },
+      {
+        topic: 'Zaman Keemasan Islam',
+        question: 'Lembaga pusat penerjemahan, perpustakaan, dan riset sains terbesar pada masa Dinasti Abbasiyah di Kota Baghdad dikenal dengan nama...',
+        options: [
+          'Darul Hikmah Kairo',
+          'Baitul Hikmah',
+          'Observatorium Samarkand',
+          'Madrasah Nizamiyah'
+        ],
+        correct: 1,
+        explanation: 'Baitul Hikmah (House of Wisdom) mencapai puncaknya pada masa Khalifah Harun Ar-Rasyid dan Al-Ma’mun di Baghdad, melahirkan tokoh seperti Al-Khawarizmi dan Al-Kindi.'
+      },
+      {
+        topic: 'Sejarah Islam di Eropa Tenggara',
+        question: 'Kota di Eropa Tenggara yang dijuluki "Yerusalem Eropa" karena harmoni masjid peninggalan Utsmaniyah (Masjid Gazi Husrev-beg) dengan rumah ibadah agama lain adalah...',
+        options: [
+          'Sarajevo, Bosnia & Herzegovina',
+          'Cordoba, Spanyol',
+          'London, Inggris',
+          'Wina, Austria'
+        ],
+        correct: 0,
+        explanation: 'Sarajevo di Bosnia & Herzegovina memiliki kawasan tua Baščaršija dengan Masjid Gazi Husrev-beg (1531 M) sebagai pusat peradaban Islam Utsmaniyah di Balkan.'
+      },
+      {
+        topic: 'Sejarah Islam di Benua Amerika',
+        question: 'Dalam sejarah masuknya Islam di benua Amerika (AS & Brasil) pada abad ke-18 hingga ke-19 M, kelompok masyarakat Muslim Afrika Barat yang mempertahankan tradisi tulisan Arab dan hafalan Al-Qur’an di Bahia, Brasil, dikenal sebagai...',
+        options: [
+          'Komunitas Mudejar',
+          'Kaum Malê',
+          'Suku Tatar Lipka',
+          'Komunitas Morisco'
+        ],
+        correct: 1,
+        explanation: 'Kaum Malê di Salvador da Bahia, Brasil, adalah komunitas Muslim Afrika Barat terpelajar yang mewariskan catatan sejarah dan manuskrip berbahasa Arab di Amerika Selatan.'
+      }
+    ];
+
+    /*************************************************************************
+     * 5. BASIS DATA REFERENSI AKADEMIK & ARSIP DUNIA
+     *************************************************************************/
+    const referencesData = [
+      {
+        category: 'Buku Sejarah',
+        title: 'Sejarah Peradaban Islam: Dirasah Islamiyah II',
+        author: 'Yatim, Badri (2018)',
+        publisher: 'Rajawali Pers, Jakarta',
+        note: 'Rujukan komprehensif mengenai periodisasi sejarah Islam klasik, pertengahan, hingga masuknya Islam di Nusantara.',
+        citation: 'Yatim, B. (2018). Sejarah Peradaban Islam: Dirasah Islamiyah II. Jakarta: Rajawali Pers.'
+      },
+      {
+        category: 'Buku Sejarah',
+        title: 'History of the Arabs: Rujukan Induk Sejarah Kekhalifahan Islam',
+        author: 'Hitti, Philip K. (2014)',
+        publisher: 'Serambi Ilmu Semesta',
+        note: 'Mengulas secara mendalam perkembangan Dinasti Umayyah di Damaskus & Andalusia serta Dinasti Abbasiyah di Baghdad.',
+        citation: 'Hitti, P. K. (2014). History of the Arabs. Jakarta: Serambi Ilmu Semesta.'
+      },
+      {
+        category: 'Buku Sejarah',
+        title: 'Jaringan Ulama Timur Tengah dan Kepulauan Nusantara Abad XVII & XVIII',
+        author: 'Azra, Azyumardi (2013)',
+        publisher: 'Kencana Prenada Media Group',
+        note: 'Analisis historis mengenai transmisi keilmuan Islam antara Haramain (Makkah-Madinah) dengan kesultanan di Nusantara.',
+        citation: 'Azra, A. (2013). Jaringan Ulama Timur Tengah dan Kepulauan Nusantara Abad XVII & XVIII. Jakarta: Kencana.'
+      },
+      {
+        category: 'Arsip UNESCO',
+        title: 'UNESCO World Heritage Centre: Historic Areas of Istanbul & Alhambra',
+        author: 'UNESCO World Heritage Committee',
+        publisher: 'whc.unesco.org',
+        note: 'Data koordinat geografis resmi, tahun penetapan, serta deskripsi konservasi situs warisan Islam di Turki, Spanyol, Uzbekistan, Mesir, dan Mali.',
+        citation: 'UNESCO World Heritage Centre. (2024). World Heritage List: Islamic Cultural Monuments & Historic Cities. Paris: UNESCO.'
+      },
+      {
+        category: 'Jurnal & Ensiklopedia',
+        title: 'The Encyclopaedia of Islam (Third Edition)',
+        author: 'Fleet, K., Krämer, G., Matringe, D., Nawas, J., & Rowson, E.',
+        publisher: 'Brill Academic Publishers, Leiden',
+        note: 'Ensiklopedia standar akademik internasional untuk verifikasi tahun kekuasaan dinasti, tokoh sejarah, dan istilah arsitektur Islam.',
+        citation: 'Fleet, K., et al. (Eds.). (2023). The Encyclopaedia of Islam, THREE. Leiden: Brill Academic Publishers.'
+      },
+      {
+        category: 'Museum & Portal',
+        title: 'Heilbrunn Timeline of Art History: Art of the Islamic World',
+        author: 'Department of Islamic Art, The Metropolitan Museum of Art',
+        publisher: 'metmuseum.org, New York',
+        note: 'Katalog artefak lintas dinasti Islam (Umayyah, Fatimiyah, Utsmaniyah, Safawiyah, Mughal) beserta kisah pembuatannya.',
+        citation: 'Department of Islamic Art. (2023). Art of the Islamic World. New York: The Metropolitan Museum of Art.'
+      }
+    ];
+
+    /*************************************************************************
+     * 6. STATE APLIKASI & PENYIMPANAN LOKAL (LOCALSTORAGE)
+     *************************************************************************/
+    let mapInstance = null;
+    let markersLayer = null;
+    let markerLookup = {};
+    let activeMapContinent = 'Semua';
+    let activeMapCategory = 'Semua';
+    let activeMapSearch = '';
+
+    let selectedContinent = 'Asia';
+    let selectedCountryId = 'saudi';
+
+    // State Kuis
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+    let quizCorrectCount = 0;
+    let quizAnswered = false;
+    let quizTimerInterval = null;
+    let quizSecondsLeft = 600;
+
+    // State Progres & Kelompok (tersimpan di localStorage)
+    const defaultMilestones = [
+      { id: 'm1', title: '1. Riset Sejarah & Kurasi Peninggalan Dinasti', desc: 'Mengumpulkan data jalur masuknya Islam di 13 negara & kisah artefak penguasa terdahulu.', done: true },
+      { id: 'm2', title: '2. Pemetaan Koordinat Geografis (Leaflet Map)', desc: 'Memverifikasi titik lintang & bujur 22 situs peninggalan dan pusat Islam dunia.', done: true },
+      { id: 'm3', title: '3. Perancangan UI/UX & Linimasa Interaktif', desc: 'Mendesain antarmuka responsif bernuansa emerald-gold dengan mode gelap & terang.', done: true },
+      { id: 'm4', title: '4. Pengembangan Sistem Kuis & Kisi-Kisi', desc: 'Menyusun 10 soal evaluasi interaktif beserta pembahasan dan sertifikat.', done: true },
+      { id: 'm5', title: '5. Uji Coba, Dokumentasi Kelompok & Presentasi', desc: 'Finalisasi catatan notulensi kelompok dan persiapan presentasi kelas.', done: true }
+    ];
+
+    const defaultMembers = [
+      { name: 'Ahmad Fauzan Al-Ghifari', nim: '2024101001', role: 'Ketua Kelompok & Riset Sejarah Dinasti Islam' },
+      { name: 'Siti Aisyah Rahmawati', nim: '2024101002', role: 'Kurator Peta Interaktif & Data Geografis Benua' },
+      { name: 'Muhammad Rizky Pratama', nim: '2024101003', role: 'UI/UX Designer & Frontend Web Developer' },
+      { name: 'Nabila Zahra Khairunnisa', nim: '2024101004', role: 'Penyusun Instrumen Kuis, Sitasi & Dokumentasi' }
+    ];
+
+    const defaultLogs = [
+      { date: '2026-11-12', agenda: 'Kick-off & Pembagian Jobdesk Kelompok', result: 'Menentukan tema portal "Jejak Peradaban Islam" dan membagi 4 benua riset.' },
+      { date: '2026-11-15', agenda: 'Kurasi Artefak Peninggalan & Verifikasi Koordinat', result: 'Berhasil mengumpulkan 22 koordinat asli museum, masjid kuno, dan pusat Islam.' },
+      { date: '2026-11-18', agenda: 'Integrasi Peta Leaflet, Kuis 10 Soal & Uji Responsif', result: 'Seluruh fitur peta flyTo, filter negara, kuis, dan salin sitasi berjalan lancar.' }
+    ];
+
+    let projectMilestones = JSON.parse(localStorage.getItem('jpi_milestones')) || defaultMilestones;
+    let groupMembers = JSON.parse(localStorage.getItem('jpi_members')) || defaultMembers;
+    let groupLogs = JSON.parse(localStorage.getItem('jpi_logs')) || defaultLogs;
+    let isEditingMembers = false;
+
+    /*************************************************************************
+     * 7. FUNGSI UTILITAS (TOAST & SALIN KE CLIPBOARD)
+     *************************************************************************/
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'success'
+        ? 'bg-emerald-900 border-amber-400 text-white'
+        : 'bg-amber-600 border-white text-white';
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-semibold animate-fade-in ${bgClass}`;
+      toast.innerHTML = `<i class="fa-solid fa-circle-check text-amber-300"></i><span>${message}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function copyTextToClipboard(text, successMsg = 'Teks berhasil disalin ke clipboard!') {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (err) {
+        showToast('Gagal menyalin teks otomatis.', 'warn');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    /*************************************************************************
+     * 8. TEMA GELAP / TERANG & MENU MOBILE
+     *************************************************************************/
+    function initThemeAndNav() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const htmlEl = document.documentElement;
+
+      // Cek preferensi tersimpan
+      if (localStorage.getItem('jpi_theme') === 'dark') {
+        htmlEl.classList.add('dark');
+        themeIcon.className = 'fa-solid fa-sun text-base';
+      }
+
+      themeToggle.addEventListener('click', () => {
+        htmlEl.classList.toggle('dark');
+        const isDark = htmlEl.classList.contains('dark');
+        localStorage.setItem('jpi_theme', isDark ? 'dark' : 'light');
+        themeIcon.className = isDark ? 'fa-solid fa-sun text-base' : 'fa-solid fa-moon text-base';
+        if (mapInstance) {
+          setTimeout(() => mapInstance.invalidateSize(), 200);
+        }
+      });
+
+      // Mobile menu toggle
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      });
+    }
+
+    /*************************************************************************
+     * 9. RENDER LINIMASA DINASTI PENGUASA ISLAM
+     *************************************************************************/
+    function renderDynastyTimeline(selectedId = 'khulafaur') {
+      const tabsContainer = document.getElementById('dynasty-tabs');
+      const detailCard = document.getElementById('dynasty-detail-card');
+
+      tabsContainer.innerHTML = dynastiesData.map((d, idx) => {
+        const isActive = d.id === selectedId;
+        return `
+          <button onclick="renderDynastyTimeline('${d.id}')"
+            class="text-left p-3 rounded-2xl border transition-all ${
+              isActive
+                ? 'bg-emerald-800 text-white border-amber-400 shadow-md scale-[1.02]'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-amber-400'
+            }">
+            <div class="text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-amber-300' : 'text-amber-600 dark:text-amber-400'}">
+              Era #${idx + 1}
+            </div>
+            <div class="font-bold text-xs sm:text-sm line-clamp-1 mt-0.5">${d.name}</div>
+            <div class="text-[11px] opacity-80 mt-0.5">${d.period.split(' ')[0]} M</div>
+          </button>
+        `;
+      }).join('');
+
+      const activeDynasty = dynastiesData.find(d => d.id === selectedId) || dynastiesData[0];
+      detailCard.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fade-in">
+          <div class="lg:col-span-5 space-y-3 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 pb-5 lg:pb-0 lg:pr-6">
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-bold">
+              <i class="fa-regular fa-calendar mr-1.5"></i>${activeDynasty.period}
+            </span>
+            <h3 class="text-2xl font-extrabold text-emerald-950 dark:text-white">${activeDynasty.name}</h3>
+            <div class="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 pt-1">
+              <p><strong class="text-emerald-800 dark:text-emerald-300">Pusat Pemerintahan:</strong> ${activeDynasty.capital}</p>
+              <p><strong class="text-emerald-800 dark:text-emerald-300">Penguasa / Tokoh Kunci:</strong> ${activeDynasty.rulers}</p>
+              <p><strong class="text-emerald-800 dark:text-emerald-300">Cakupan Wilayah:</strong> ${activeDynasty.territory}</p>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-4">
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Peran & Sejarah Kekuasaan</h4>
+              <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">${activeDynasty.summary}</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+              <div class="p-4 rounded-2xl bg-creamSoft dark:bg-slate-800/80 border border-amber-500/20">
+                <div class="text-xs font-bold text-emerald-900 dark:text-emerald-300 mb-1">
+                  <i class="fa-solid fa-landmark text-amber-500 mr-1.5"></i>Peninggalan Bersejarah Utama
+                </div>
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${activeDynasty.relics}</p>
+              </div>
+              <div class="p-4 rounded-2xl bg-creamSoft dark:bg-slate-800/80 border border-emerald-500/20">
+                <div class="text-xs font-bold text-emerald-900 dark:text-emerald-300 mb-1">
+                  <i class="fa-solid fa-earth-asia text-emerald-600 mr-1.5"></i>Dampak bagi Peradaban Dunia
+                </div>
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${activeDynasty.impact}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /*************************************************************************
+     * 10. PETA INTERAKTIF LEAFLET.JS
+     *************************************************************************/
+    function createCustomMarkerIcon(category) {
+      const isRelic = category === 'Peninggalan';
+      const fill = isRelic ? '#d97706' : '#059669';
+      const ring = isRelic ? '#fef3c7' : '#d1fae5';
+      const iconHtml = `
+        <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 36 36" width="32" height="32" style="filter: drop-shadow(0 3px 5px rgba(0,0,0,0.35));">
+            <path d="M18 2C10.8 2 5 7.8 5 15c0 9.4 13 19 13 19s13-9.6 13-19c0-7.2-5.8-13-13-13z" fill="${fill}" stroke="${ring}" stroke-width="2.5"/>
+            <circle cx="18" cy="14.5" r="5" fill="#ffffff"/>
+          </svg>
+        </div>
+      `;
+      return L.divIcon({
+        html: iconHtml,
+        className: 'custom-pin',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -30]
+      });
+    }
+
+    function initInteractiveMap() {
+      try {
+        mapInstance = L.map('heritage-map', {
+          center: [24.0, 42.0],
+          zoom: 2,
+          minZoom: 2,
+          scrollWheelZoom: true
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors | Jejak Peradaban Islam'
+        }).addTo(mapInstance);
+
+        markersLayer = L.layerGroup().addTo(mapInstance);
+        renderMapMarkersAndList();
+
+        window.addEventListener('resize', () => {
+          if (mapInstance) mapInstance.invalidateSize();
+        });
+      } catch (error) {
+        console.error('Gagal memuat peta Leaflet:', error);
+      }
+    }
+
+    function renderMapMarkersAndList() {
+      if (!markersLayer) return;
+      markersLayer.clearLayers();
+      markerLookup = {};
+
+      const filtered = mapLocations.filter(loc => {
+        const matchCont = activeMapContinent === 'Semua' || loc.continent === activeMapContinent;
+        const matchCat = activeMapCategory === 'Semua' || loc.category === activeMapCategory;
+        const q = activeMapSearch.toLowerCase();
+        const matchSearch = !q ||
+          loc.name.toLowerCase().includes(q) ||
+          loc.country.toLowerCase().includes(q) ||
+          loc.city.toLowerCase().includes(q) ||
+          loc.dynasty.toLowerCase().includes(q);
+        return matchCont && matchCat && matchSearch;
+      });
+
+      document.getElementById('map-count').textContent = filtered.length;
+      const listContainer = document.getElementById('map-location-list');
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-10 px-4 text-xs text-slate-500">
+            <i class="fa-solid fa-map-pin text-2xl text-amber-500 mb-2 block"></i>
+            Tidak ada titik lokasi yang cocok dengan filter saat ini.
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map(loc => {
+        const isRelic = loc.category === 'Peninggalan';
+        return `
+          <button onclick="flyToMapLocation('${loc.id}')"
+            class="w-full text-left p-3 rounded-2xl bg-creamSoft/70 dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 border border-slate-200/80 dark:border-slate-700 hover:border-amber-400 transition group">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                isRelic
+                  ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300'
+                  : 'bg-emerald-600/20 text-emerald-800 dark:text-emerald-300'
+              }">
+                ${loc.category}
+              </span>
+              <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">${loc.continent} • ${loc.country}</span>
+            </div>
+            <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-800 dark:group-hover:text-amber-300 transition">
+              ${loc.name}
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+              <i class="fa-solid fa-crown text-amber-500 mr-1"></i>${loc.dynasty}
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      filtered.forEach(loc => {
+        const isRelic = loc.category === 'Peninggalan';
+        const popupHtml = `
+          <div class="space-y-1.5 text-slate-800">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+              <span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:${isRelic ? '#fef3c7' : '#d1fae5'};color:${isRelic ? '#92400e' : '#065f46'};">
+                ${loc.category} • ${loc.continent}
+              </span>
+              <span style="font-size:10px;color:#64748b;font-weight:600;">${loc.year}</span>
+            </div>
+            <h4 style="font-weight:800;font-size:14px;color:#064e3b;margin:2px 0;">${loc.name}</h4>
+            <div style="font-size:11px;color:#475569;">
+              <strong>Lokasi:</strong> ${loc.city}, ${loc.country}<br/>
+              <strong>Penguasa/Era:</strong> ${loc.dynasty}
+            </div>
+            <p style="font-size:11.5px;line-height:1.45;color:#334155;background:#fdfbf7;padding:7px 9px;border-radius:10px;border-left:3px solid #d97706;margin:6px 0;">
+              ${loc.story}
+            </p>
+            <div style="font-size:10px;color:#64748b;font-family:monospace;">
+              Koordinat: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}
+            </div>
+          </div>
+        `;
+
+        const marker = L.marker([loc.lat, loc.lng], {
+          icon: createCustomMarkerIcon(loc.category)
+        }).bindPopup(popupHtml);
+
+        marker.addTo(markersLayer);
+        markerLookup[loc.id] = marker;
+      });
+    }
+
+    function flyToMapLocation(locationId, shouldScrollToMap = false) {
+      const targetLoc = mapLocations.find(l => l.id === locationId);
+      if (!targetLoc || !mapInstance) return;
+
+      // Reset filter jika titik tersebut tersembunyi oleh filter aktif
+      if (!markerLookup[locationId]) {
+        activeMapContinent = 'Semua';
+        activeMapCategory = 'Semua';
+        activeMapSearch = '';
+        document.getElementById('map-category-filter').value = 'Semua';
+        document.getElementById('map-search-input').value = '';
+        document.querySelectorAll('.map-cont-btn').forEach(b => {
+          b.classList.remove('bg-emerald-800', 'text-white');
+          b.classList.add('bg-creamSoft', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+          if (b.dataset.continent === 'Semua') {
+            b.classList.add('bg-emerald-800', 'text-white');
+            b.classList.remove('bg-creamSoft', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+          }
+        });
+        renderMapMarkersAndList();
+      }
+
+      if (shouldScrollToMap) {
+        document.getElementById('peta').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      setTimeout(() => {
+        mapInstance.invalidateSize();
+        mapInstance.flyTo([targetLoc.lat, targetLoc.lng], 11, { duration: 1.4 });
+        setTimeout(() => {
+          if (markerLookup[locationId]) {
+            markerLookup[locationId].openPopup();
+          }
+        }, 1450);
+      }, shouldScrollToMap ? 450 : 50);
+    }
+
+    function initMapControls() {
+      document.querySelectorAll('.map-cont-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.map-cont-btn').forEach(b => {
+            b.classList.remove('bg-emerald-800', 'text-white');
+            b.classList.add('bg-creamSoft', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+          });
+          btn.classList.add('bg-emerald-800', 'text-white');
+          btn.classList.remove('bg-creamSoft', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+
+          activeMapContinent = btn.dataset.continent;
+          renderMapMarkersAndList();
+        });
+      });
+
+      document.getElementById('map-category-filter').addEventListener('change', (e) => {
+        activeMapCategory = e.target.value;
+        renderMapMarkersAndList();
+      });
+
+      document.getElementById('map-search-input').addEventListener('input', (e) => {
+        activeMapSearch = e.target.value;
+        renderMapMarkersAndList();
+      });
+
+      document.getElementById('map-reset-view').addEventListener('click', () => {
+        if (mapInstance) {
+          mapInstance.closePopup();
+          mapInstance.flyTo([24.0, 42.0], 2, { duration: 1.0 });
+        }
+      });
+    }
+
+    /*************************************************************************
+     * 11. EKSPLORASI BENUA & NEGARA
+     *************************************************************************/
+    const continentsMeta = [
+      { id: 'Asia', label: 'Benua Asia', icon: 'fa-mosque', sub: '5 Negara Kunci' },
+      { id: 'Afrika', label: 'Benua Afrika', icon: 'fa-sun', sub: '3 Negara Kunci' },
+      { id: 'Eropa', label: 'Benua Eropa', icon: 'fa-landmark-dome', sub: '3 Negara Kunci' },
+      { id: 'Amerika', label: 'Benua Amerika', icon: 'fa-earth-americas', sub: '2 Negara Kunci' }
+    ];
+
+    function renderContinentExplorer() {
+      const contContainer = document.getElementById('continent-selector');
+      contContainer.innerHTML = continentsMeta.map(c => {
+        const isActive = c.id === selectedContinent;
+        return `
+          <button onclick="selectContinent('${c.id}')"
+            class="px-5 py-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 ${
+              isActive
+                ? 'bg-emerald-800 text-white border-amber-400 shadow-lg scale-[1.02]'
+                : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 hover:border-amber-400'
+            }">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center ${
+              isActive ? 'bg-amber-500 text-emerald-950' : 'bg-creamSoft dark:bg-slate-800 text-emerald-700 dark:text-amber-400'
+            }">
+              <i class="fa-solid ${c.icon}"></i>
+            </div>
+            <div>
+              <div class="font-extrabold text-sm">${c.label}</div>
+              <div class="text-[11px] ${isActive ? 'text-emerald-200' : 'text-slate-500'}">${c.sub}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      const filteredCountries = countriesData.filter(c => c.continent === selectedContinent);
+      document.getElementById('selected-continent-label').textContent = selectedContinent;
+      document.getElementById('country-count-label').textContent = `${filteredCountries.length} Negara Terkurasi`;
+
+      if (!filteredCountries.some(c => c.id === selectedCountryId)) {
+        selectedCountryId = filteredCountries[0].id;
+      }
+
+      const countryContainer = document.getElementById('country-selector');
+      countryContainer.innerHTML = filteredCountries.map(country => {
+        const isActive = country.id === selectedCountryId;
+        return `
+          <button onclick="selectCountry('${country.id}')"
+            class="p-3 rounded-2xl border text-left transition-all ${
+              isActive
+                ? 'bg-amber-500 text-emerald-950 border-amber-600 font-extrabold shadow-md'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-emerald-600 font-semibold'
+            }">
+            <div class="text-xs sm:text-sm">${country.name}</div>
+            <div class="text-[10px] opacity-80 mt-0.5 line-clamp-1">${country.eraEntry}</div>
+          </button>
+        `;
+      }).join('');
+
+      renderCountryDetailCard();
+    }
+
+    function selectContinent(continentId) {
+      selectedContinent = continentId;
+      renderContinentExplorer();
+    }
+
+    function selectCountry(countryId) {
+      selectedCountryId = countryId;
+      renderContinentExplorer();
+    }
+
+    function renderCountryDetailCard() {
+      const country = countriesData.find(c => c.id === selectedCountryId) || countriesData[0];
+      const container = document.getElementById('country-detail-container');
+
+      container.innerHTML = `
+        <!-- Header Kartu Negara -->
+        <div class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 text-white p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-4 border-amber-500">
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3 py-1 rounded-full bg-amber-500 text-emerald-950 text-xs font-extrabold uppercase">
+                Benua ${country.continent}
+              </span>
+              <span class="px-3 py-1 rounded-full bg-white/10 text-emerald-100 text-xs font-semibold">
+                <i class="fa-regular fa-hourglass-half mr-1 text-amber-300"></i>Masuk: ${country.eraEntry}
+              </span>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">${country.name}</h3>
+            <p class="text-xs sm:text-sm text-emerald-200">
+              <strong>Ibu Kota / Pusat Sejarah:</strong> ${country.capital} • <strong>Dinasti Utama:</strong> ${country.mainDynasty}
+            </p>
+          </div>
+
+          <button onclick="flyToMapLocation('${country.mapTargetId}', true)"
+            class="self-start md:self-center px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-extrabold text-xs sm:text-sm shadow-lg transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <span>Lihat Titik Peninggalan di Peta</span>
+          </button>
+        </div>
+
+        <!-- 4 Pilar Informasi Negara -->
+        <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- 1. Sejarah Masuknya Islam -->
+          <div class="p-5 rounded-2xl bg-creamSoft/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2.5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-emerald-800 text-amber-300 flex items-center justify-center font-bold text-sm">1</span>
+              <h4 class="font-extrabold text-base text-emerald-950 dark:text-emerald-300">Sejarah Masuknya Islam</h4>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              ${country.historyEntry}
+            </p>
+          </div>
+
+          <!-- 2. Peninggalan Islam pada Penguasa Sebelumnya -->
+          <div class="p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/20 border border-amber-500/30 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-amber-500 text-emerald-950 flex items-center justify-center font-bold text-sm">2</span>
+                <h4 class="font-extrabold text-base text-emerald-950 dark:text-amber-300">Peninggalan Penguasa Terdahulu</h4>
+              </div>
+            </div>
+            <div class="text-xs space-y-1 text-slate-700 dark:text-slate-300">
+              <p><strong class="text-amber-700 dark:text-amber-400">Penguasa/Dinasti:</strong> ${country.pastRelics.ruler}</p>
+              <p><strong class="text-amber-700 dark:text-amber-400">Benda/Situs Bersejarah:</strong> ${country.pastRelics.artifact}</p>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed bg-white/80 dark:bg-slate-900/70 p-3 rounded-xl border border-amber-500/20">
+              <strong>Kisah di Balik Peninggalan:</strong> ${country.pastRelics.story}
+            </p>
+            <div class="flex items-center justify-between pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+              <span><i class="fa-solid fa-map-pin text-amber-600 mr-1"></i>${country.pastRelics.locationName}</span>
+              <button onclick="flyToMapLocation('${country.mapTargetId}', true)" class="font-bold text-emerald-800 dark:text-amber-400 hover:underline">
+                Buka Peta &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Pusat-Pusat Islam di Negara Tersebut -->
+          <div class="p-5 rounded-2xl bg-creamSoft/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2.5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-emerald-800 text-amber-300 flex items-center justify-center font-bold text-sm">3</span>
+              <h4 class="font-extrabold text-base text-emerald-950 dark:text-emerald-300">Pusat-Pusat Islam Utama</h4>
+            </div>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+              ${country.islamicCenters.map(item => `
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-star-and-crescent text-amber-500 mt-1 text-xs shrink-0"></i>
+                  <span>${item}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+
+          <!-- 4. Perkembangan Islam Saat Ini -->
+          <div class="p-5 rounded-2xl bg-creamSoft/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2.5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-emerald-800 text-amber-300 flex items-center justify-center font-bold text-sm">4</span>
+              <h4 class="font-extrabold text-base text-emerald-950 dark:text-emerald-300">Perkembangan Islam Saat Ini</h4>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              ${country.modernDevelopment}
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    /*************************************************************************
+     * 12. SIMULASI KUIS INTERAKTIF & PERANCANGAN KUIS
+     *************************************************************************/
+    function initQuizSystem() {
+      const tabSim = document.getElementById('tab-quiz-sim');
+      const tabDesign = document.getElementById('tab-quiz-design');
+      const panelSim = document.getElementById('panel-quiz-sim');
+      const panelDesign = document.getElementById('panel-quiz-design');
+
+      tabSim.addEventListener('click', () => {
+        tabSim.className = 'quiz-main-tab active px-5 py-3 rounded-2xl text-sm font-bold bg-emerald-800 text-white shadow-md transition flex items-center gap-2';
+        tabDesign.className = 'quiz-main-tab px-5 py-3 rounded-2xl text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 transition flex items-center gap-2';
+        panelSim.classList.remove('hidden');
+        panelDesign.classList.add('hidden');
+      });
+
+      tabDesign.addEventListener('click', () => {
+        tabDesign.className = 'quiz-main-tab active px-5 py-3 rounded-2xl text-sm font-bold bg-emerald-800 text-white shadow-md transition flex items-center gap-2';
+        tabSim.className = 'quiz-main-tab px-5 py-3 rounded-2xl text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 transition flex items-center gap-2';
+        panelDesign.classList.remove('hidden');
+        panelSim.classList.add('hidden');
+      });
+
+      document.getElementById('btn-start-quiz').addEventListener('click', startQuiz);
+      document.getElementById('btn-next-question').addEventListener('click', () => {
+        currentQuizIndex++;
+        if (currentQuizIndex < quizQuestions.length) {
+          renderQuizQuestion();
+        } else {
+          finishQuiz();
+        }
+      });
+      document.getElementById('btn-retry-quiz').addEventListener('click', startQuiz);
+      document.getElementById('btn-copy-result').addEventListener('click', () => {
+        const name = document.getElementById('cert-participant-name').textContent;
+        const score = document.getElementById('cert-score').textContent;
+        const correct = document.getElementById('cert-correct').textContent;
+        const grade = document.getElementById('cert-grade').textContent;
+        copyTextToClipboard(
+          `Hasil Kuis Sejarah Islam Dunia\nNama: ${name}\nSkor: ${score}/100 (${correct} Benar)\nPredikat: ${grade}`,
+          'Hasil kuis berhasil disalin!'
+        );
+      });
+    }
+
+    function startQuiz() {
+      currentQuizIndex = 0;
+      quizScore = 0;
+      quizCorrectCount = 0;
+      quizAnswered = false;
+      clearInterval(quizTimerInterval);
+
+      document.getElementById('quiz-start-screen').classList.add('hidden');
+      document.getElementById('quiz-result-screen').classList.add('hidden');
+      document.getElementById('quiz-active-screen').classList.remove('hidden');
+
+      const useTimer = document.getElementById('quiz-enable-timer').checked;
+      const timerBadge = document.getElementById('quiz-timer-badge');
+      if (useTimer) {
+        timerBadge.classList.remove('hidden');
+        quizSecondsLeft = 600;
+        updateTimerDisplay();
+        quizTimerInterval = setInterval(() => {
+          quizSecondsLeft--;
+          updateTimerDisplay();
+          if (quizSecondsLeft <= 0) {
+            clearInterval(quizTimerInterval);
+            finishQuiz();
+          }
+        }, 1000);
+      } else {
+        timerBadge.classList.add('hidden');
+      }
+
+      renderQuizQuestion();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(quizSecondsLeft / 60).toString().padStart(2, '0');
+      const secs = (quizSecondsLeft % 60).toString().padStart(2, '0');
+      document.getElementById('quiz-timer-text').textContent = `${mins}:${secs}`;
+    }
+
+    function renderQuizQuestion() {
+      quizAnswered = false;
+      const q = quizQuestions[currentQuizIndex];
+
+      document.getElementById('quiz-q-num').textContent = currentQuizIndex + 1;
+      document.getElementById('quiz-topic-badge').textContent = q.topic;
+      document.getElementById('quiz-live-score').textContent = quizScore;
+      document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`;
+      document.getElementById('quiz-question-text').textContent = q.question;
+
+      document.getElementById('quiz-explanation-box').classList.add('hidden');
+      document.getElementById('btn-next-question').classList.add('hidden');
+
+      const letters = ['A', 'B', 'C', 'D'];
+      const optionsContainer = document.getElementById('quiz-options-list');
+      optionsContainer.innerHTML = q.options.map((opt, idx) => `
+        <button onclick="handleQuizAnswer(${idx})" id="quiz-opt-${idx}"
+          class="w-full text-left p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-creamSoft/60 dark:bg-slate-800/70 hover:border-amber-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition flex items-center gap-3.5 text-sm font-medium">
+          <span class="w-8 h-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-extrabold text-xs text-emerald-900 dark:text-amber-400 shrink-0">
+            ${letters[idx]}
+          </span>
+          <span>${opt}</span>
+        </button>
+      `).join('');
+    }
+
+    function handleQuizAnswer(selectedIdx) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+
+      const q = quizQuestions[currentQuizIndex];
+      const isCorrect = selectedIdx === q.correct;
+
+      if (isCorrect) {
+        quizScore += 10;
+        quizCorrectCount++;
+        document.getElementById('quiz-live-score').textContent = quizScore;
+      }
+
+      q.options.forEach((_, idx) => {
+        const btn = document.getElementById(`quiz-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === q.correct) {
+          btn.className = 'w-full text-left p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-950 dark:text-white transition flex items-center gap-3.5 text-sm font-bold';
+        } else if (idx === selectedIdx && !isCorrect) {
+          btn.className = 'w-full text-left p-4 rounded-2xl border-2 border-rose-500 bg-rose-100 dark:bg-rose-950/60 text-rose-950 dark:text-rose-200 transition flex items-center gap-3.5 text-sm font-semibold';
+        } else {
+          btn.classList.add('opacity-60');
+        }
+      });
+
+      document.getElementById('quiz-explanation-text').textContent = q.explanation;
+      document.getElementById('quiz-explanation-box').classList.remove('hidden');
+
+      const nextBtn = document.getElementById('btn-next-question');
+      nextBtn.innerHTML = currentQuizIndex === quizQuestions.length - 1
+        ? 'Lihat Hasil & Sertifikat <i class="fa-solid fa-award ml-1.5"></i>'
+        : 'Soal Berikutnya <i class="fa-solid fa-arrow-right ml-1.5"></i>';
+      nextBtn.classList.remove('hidden');
+    }
+
+    function finishQuiz() {
+      clearInterval(quizTimerInterval);
+      document.getElementById('quiz-active-screen').classList.add('hidden');
+      document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+      const nameInput = document.getElementById('quiz-participant-name').value.trim();
+      document.getElementById('cert-participant-name').textContent = nameInput || 'Penjelajah Peradaban Islam';
+      document.getElementById('cert-score').textContent = quizScore;
+      document.getElementById('cert-correct').textContent = `${quizCorrectCount}/${quizQuestions.length}`;
+
+      let grade = 'Perlu Eksplorasi Ulang';
+      if (quizScore >= 80) grade = 'Mumtaz (Sangat Baik)';
+      else if (quizScore >= 60) grade = 'Jayyid Jiddan (Baik)';
+      document.getElementById('cert-grade').textContent = grade;
+    }
+
+    /*************************************************************************
+     * 13. PERKEMBANGAN PROJECT & DOKUMENTASI KELOMPOK
+     *************************************************************************/
+    function renderProjectTracker() {
+      const completedCount = projectMilestones.filter(m => m.done).length;
+      const pct = Math.round((completedCount / projectMilestones.length) * 100);
+
+      document.getElementById('project-progress-percent').textContent = `${pct}%`;
+      document.getElementById('project-progress-bar').style.width = `${pct}%`;
+
+      const listEl = document.getElementById('project-milestones-list');
+      listEl.innerHTML = projectMilestones.map((m, idx) => `
+        <label class="flex items-start gap-3 p-3 rounded-2xl border cursor-pointer transition ${
+          m.done
+            ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300/60 dark:border-emerald-800'
+            : 'bg-creamSoft/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
+        }">
+          <input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMilestone(${idx})"
+            class="mt-1 rounded text-emerald-700 focus:ring-amber-500 w-4 h-4" />
+          <div class="text-xs">
+            <div class="font-bold ${m.done ? 'text-emerald-950 dark:text-emerald-300' : 'text-slate-700 dark:text-slate-200'}">
+              ${m.title}
+            </div>
+            <div class="text-slate-500 dark:text-slate-400 mt-0.5">${m.desc}</div>
+          </div>
+        </label>
+      `).join('');
+    }
+
+    function toggleMilestone(idx) {
+      projectMilestones[idx].done = !projectMilestones[idx].done;
+      localStorage.setItem('jpi_milestones', JSON.stringify(projectMilestones));
+      renderProjectTracker();
+      showToast('Status progres tahapan proyek diperbarui.');
+    }
+
+    function renderGroupMembers() {
+      const tbody = document.getElementById('group-members-tbody');
+      tbody.innerHTML = groupMembers.map((mem, idx) => {
+        if (isEditingMembers) {
+          return `
+            <tr>
+              <td class="p-2.5 font-bold">${idx + 1}</td>
+              <td class="p-2.5">
+                <input type="text" id="edit-mem-name-${idx}" value="${mem.name}" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-creamSoft dark:bg-slate-800 border border-amber-400" />
+              </td>
+              <td class="p-2.5">
+                <input type="text" id="edit-mem-nim-${idx}" value="${mem.nim}" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-creamSoft dark:bg-slate-800 border border-amber-400" />
+              </td>
+              <td class="p-2.5">
+                <input type="text" id="edit-mem-role-${idx}" value="${mem.role}" class="w-full px-2.5 py-1.5 rounded-lg text-xs bg-creamSoft dark:bg-slate-800 border border-amber-400" />
+              </td>
+            </tr>
+          `;
+        }
+        return `
+          <tr class="hover:bg-creamSoft/50 dark:hover:bg-slate-800/40">
+            <td class="p-3 font-bold">${idx + 1}</td>
+            <td class="p-3 font-bold text-slate-900 dark:text-white">${mem.name}</td>
+            <td class="p-3 font-mono text-xs text-slate-600 dark:text-slate-300">${mem.nim}</td>
+            <td class="p-3 text-slate-700 dark:text-slate-300">${mem.role}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderGroupLogs() {
+      const container = document.getElementById('group-logs-list');
+      container.innerHTML = groupLogs.map(log => `
+        <div class="p-3.5 rounded-2xl bg-creamSoft/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-emerald-800 text-amber-300 font-mono text-[10px] font-bold">${log.date}</span>
+              <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">${log.agenda}</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300">${log.result}</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold self-start sm:self-center shrink-0">
+            <i class="fa-solid fa-check mr-1"></i>Terdokumentasi
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function initGroupSection() {
+      renderProjectTracker();
+      renderGroupMembers();
+      renderGroupLogs();
+
+      const editBtn = document.getElementById('btn-toggle-edit-members');
+      editBtn.addEventListener('click', () => {
+        if (isEditingMembers) {
+          groupMembers = groupMembers.map((_, idx) => ({
+            name: document.getElementById(`edit-mem-name-${idx}`).value.trim() || `Anggota ${idx + 1}`,
+            nim: document.getElementById(`edit-mem-nim-${idx}`).value.trim() || '-',
+            role: document.getElementById(`edit-mem-role-${idx}`).value.trim() || 'Anggota Tim'
+          }));
+          localStorage.setItem('jpi_members', JSON.stringify(groupMembers));
+          isEditingMembers = false;
+          editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square mr-1"></i>Edit Anggota';
+          showToast('Data anggota kelompok berhasil disimpan!');
+        } else {
+          isEditingMembers = true;
+          editBtn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i>Simpan Perubahan';
+        }
+        renderGroupMembers();
+      });
+
+      const logForm = document.getElementById('add-log-form');
+      document.getElementById('btn-show-log-form').addEventListener('click', () => {
+        logForm.classList.remove('hidden');
+      });
+      document.getElementById('btn-cancel-log').addEventListener('click', () => {
+        logForm.classList.add('hidden');
+      });
+      logForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dateVal = document.getElementById('log-date-input').value;
+        const agendaVal = document.getElementById('log-agenda-input').value.trim();
+        const resultVal = document.getElementById('log-result-input').value.trim();
+
+        groupLogs.unshift({ date: dateVal, agenda: agendaVal, result: resultVal });
+        localStorage.setItem('jpi_logs', JSON.stringify(groupLogs));
+        renderGroupLogs();
+        logForm.reset();
+        logForm.classList.add('hidden');
+        showToast('Catatan progres kelompok berhasil ditambahkan!');
+      });
+
+      document.getElementById('btn-export-group-report').addEventListener('click', () => {
+        const memberLines = groupMembers.map((m, i) => `${i + 1}. ${m.name} (${m.nim}) - ${m.role}`).join('\n');
+        const logLines = groupLogs.map(l => `- [${l.date}] ${l.agenda}: ${l.result}`).join('\n');
+        const summary = `DOKUMENTASI PROYEK WEB: JEJAK PERADABAN & PENINGGALAN SEJARAH ISLAM DUNIA\n\nANGGOTA KELOMPOK:\n${memberLines}\n\nLOG KEGIATAN:\n${logLines}`;
+        copyTextToClipboard(summary, 'Ringkasan dokumentasi kelompok siap ditempel ke laporan!');
+      });
+    }
+
+    /*************************************************************************
+     * 14. SUMBER-SUMBER REFERENSI WEBSITE
+     *************************************************************************/
+    function renderReferences(filterCat = 'Semua') {
+      const grid = document.getElementById('references-grid');
+      const filtered = filterCat === 'Semua'
+        ? referencesData
+        : referencesData.filter(r => r.category === filterCat);
+
+      grid.innerHTML = filtered.map((ref, idx) => `
+        <div class="p-5 rounded-3xl bg-emerald-900/60 border border-emerald-700/60 flex flex-col justify-between gap-4 hover:border-amber-400/60 transition">
+          <div class="space-y-2">
+            <span class="inline-block px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 text-[11px] font-bold">
+              ${ref.category}
+            </span>
+            <h3 class="font-bold text-base text-white leading-snug">${ref.title}</h3>
+            <p class="text-xs text-amber-200/90 font-semibold">${ref.author} • ${ref.publisher}</p>
+            <p class="text-xs text-emerald-100/80 leading-relaxed">${ref.note}</p>
+          </div>
+
+          <div class="pt-3 border-t border-emerald-800 flex items-center justify-between gap-2">
+            <span class="text-[10px] text-emerald-300/70 truncate font-mono">${ref.citation}</span>
+            <button onclick="copyCitation(${idx}, '${filterCat}')"
+              class="shrink-0 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 text-xs font-extrabold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-copy"></i>
+              <span>Salin Sitasi</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function copyCitation(idx, filterCat) {
+      const filtered = filterCat === 'Semua'
+        ? referencesData
+        : referencesData.filter(r => r.category === filterCat);
+      if (filtered[idx]) {
+        copyTextToClipboard(filtered[idx].citation, 'Sitasi daftar pustaka berhasil disalin!');
+      }
+    }
+
+    function initReferenceFilters() {
+      renderReferences('Semua');
+      document.querySelectorAll('.ref-cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.ref-cat-btn').forEach(b => {
+            b.className = 'ref-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition';
+          });
+          btn.className = 'ref-cat-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 text-emerald-950 transition';
+          renderReferences(btn.dataset.refcat);
+        });
+      });
+    }
+
+    /*************************************************************************
+     * 15. INISIALISASI SAAT HALAMAN SELESAI DIMUAT
+     *************************************************************************/
+    window.addEventListener('DOMContentLoaded', () => {
+      initThemeAndNav();
+      renderDynastyTimeline('khulafaur');
+      initInteractiveMap();
+      initMapControls();
+      renderContinentExplorer();
+      initQuizSystem();
+      initGroupSection();
+      initReferenceFilters();
+    });
+  </script>
+</body>
+</html>
